@@ -242,3 +242,90 @@ export const deleteComplaint = async (req, res) => {
     });
   }
 };
+
+export const getComplaintById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const complaint = await Complaint.findById(id).populate(
+      "userId",
+      "name email",
+    );
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: complaint,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
+export const getUserComplaints = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const complaints = await Complaint.find({ userId })
+      .populate("userId", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: complaints.length,
+      data: complaints,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
+export const getAllComplaints = async (req, res) => {
+  try {
+    const { status, category, priority, page = 1, limit = 10 } = req.query;
+    
+    const filter = {};
+    if (status) filter.status = status;
+    if (category) filter.category = category;
+    if (priority) filter.priority = priority;
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const complaints = await Complaint.find(filter)
+      .populate("userId", "name email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const total = await Complaint.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      count: complaints.length,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / parseInt(limit)),
+      data: complaints,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
