@@ -17,6 +17,7 @@ const initialState = {
   total: 0,
   page: 1,
   totalPages: 1,
+  userComplaintsLoaded: false,
 };
 
 export const createComplaintAsync = createAsyncThunk(
@@ -57,7 +58,14 @@ export const deleteComplaintAsync = createAsyncThunk(
 
 export const fetchUserComplaints = createAsyncThunk(
   "complaint/fetchUserComplaints",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
+    // Check if already loaded
+    const { userComplaintsLoaded } = getState().complaint;
+    if (userComplaintsLoaded) {
+      // Return null to skip the API call
+      return { skipFetch: true };
+    }
+    
     try {
       const response = await getUserComplaints();
       return response;
@@ -172,12 +180,19 @@ const complaintSlice = createSlice({
       })
 
       .addCase(fetchUserComplaints.pending, (state) => {
-        state.loading = true;
+        // Only set loading if data hasn't been loaded yet
+        if (!state.userComplaintsLoaded) {
+          state.loading = true;
+        }
         state.error = null;
       })
       .addCase(fetchUserComplaints.fulfilled, (state, action) => {
         state.loading = false;
-        state.userComplaints = action.payload.data;
+        // Only update if we actually fetched data (not skipped)
+        if (!action.payload.skipFetch) {
+          state.userComplaints = action.payload.data;
+          state.userComplaintsLoaded = true; // Mark as loaded
+        }
       })
       .addCase(fetchUserComplaints.rejected, (state, action) => {
         state.loading = false;

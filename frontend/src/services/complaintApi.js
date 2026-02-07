@@ -10,7 +10,6 @@ export const createComplaint = async (data) => {
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
-
     throw new Error(errorMessage);
   }
 };
@@ -25,7 +24,6 @@ export const updateComplaint = async (id, data) => {
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
-
     throw new Error(errorMessage);
   }
 };
@@ -40,7 +38,6 @@ export const deleteComplaint = async (id) => {
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
-
     throw new Error(errorMessage);
   }
 };
@@ -55,7 +52,6 @@ export const getUserComplaints = async () => {
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
-
     throw new Error(errorMessage);
   }
 };
@@ -70,7 +66,6 @@ export const getAllComplaints = async (params = {}) => {
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
-
     throw new Error(errorMessage);
   }
 };
@@ -85,7 +80,6 @@ export const getComplaintById = async (id) => {
       error.response?.data?.error ||
       error.message ||
       "Something went wrong";
-
     throw new Error(errorMessage);
   }
 };
