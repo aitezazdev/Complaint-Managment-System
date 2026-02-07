@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/auth", authRoutes);
-app.use("/api/complaints", complaintRoutes);
+app.use("/api/complaint", complaintRoutes);
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");

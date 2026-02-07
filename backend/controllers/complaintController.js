@@ -1,8 +1,21 @@
 import { Complaint } from "../models/complaintModel.js";
 import cloudinary from "../config/cloudinary.js";
-import streamifier from "streamifier";
 
-// Create a new complaint
+const deleteFromCloudinary = async (publicId) => {
+  try {
+    await Promise.race([
+      cloudinary.uploader.destroy(publicId),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout")), 10000),
+      ),
+    ]);
+    return true;
+  } catch (error) {
+    console.error(`Failed to delete ${publicId}:`, error.message);
+    return false;
+  }
+};
+
 export const createComplaint = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -19,35 +32,24 @@ export const createComplaint = async (req, res) => {
 
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const uploadImage = () =>
-          new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              {
-                folder: "complaint_images",
-                allowed_formats: ["jpg", "jpeg", "png", "webp"],
-                resource_type: "image",
-              },
-              (error, result) => {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve(result);
-                }
-              }
-            );
-            streamifier.createReadStream(file.buffer).pipe(stream);
+        try {
+          const b64 = Buffer.from(file.buffer).toString("base64");
+          const dataURI = `data:${file.mimetype};base64,${b64}`;
+
+          const result = await cloudinary.uploader.upload(dataURI, {
+            folder: "complaint_images",
+            resource_type: "image",
           });
 
-        try {
-          const result = await uploadImage();
           uploadedImages.push({
             url: result.secure_url,
             publicId: result.public_id,
           });
         } catch (uploadError) {
           for (const img of uploadedImages) {
-            await cloudinary.uploader.destroy(img.publicId);
+            await deleteFromCloudinary(img.publicId);
           }
+
           return res.status(500).json({
             success: false,
             message: "Failed to upload images",
@@ -83,7 +85,6 @@ export const createComplaint = async (req, res) => {
   }
 };
 
-// Update an existing complaint
 export const updateComplaint = async (req, res) => {
   try {
     const { id } = req.params;
@@ -126,8 +127,9 @@ export const updateComplaint = async (req, res) => {
 
     if (isAdmin) {
       if (req.body.status) updatedData.status = req.body.status;
-      if (req.body.adminNotes !== undefined) updatedData.adminNotes = req.body.adminNotes;
-      
+      if (req.body.adminNotes !== undefined)
+        updatedData.adminNotes = req.body.adminNotes;
+
       if (req.body.status === "Resolved" && !complaint.resolvedAt) {
         updatedData.resolvedAt = new Date();
       }
@@ -137,35 +139,24 @@ export const updateComplaint = async (req, res) => {
       const uploadedImages = [];
 
       for (const file of req.files) {
-        const uploadImage = () =>
-          new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              {
-                folder: "complaint_images",
-                allowed_formats: ["jpg", "jpeg", "png", "webp"],
-                resource_type: "image",
-              },
-              (error, result) => {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve(result);
-                }
-              }
-            );
-            streamifier.createReadStream(file.buffer).pipe(stream);
+        try {
+          const b64 = Buffer.from(file.buffer).toString("base64");
+          const dataURI = `data:${file.mimetype};base64,${b64}`;
+
+          const result = await cloudinary.uploader.upload(dataURI, {
+            folder: "complaint_images",
+            resource_type: "image",
           });
 
-        try {
-          const result = await uploadImage();
           uploadedImages.push({
             url: result.secure_url,
             publicId: result.public_id,
           });
         } catch (uploadError) {
           for (const img of uploadedImages) {
-            await cloudinary.uploader.destroy(img.publicId);
+            await deleteFromCloudinary(img.publicId);
           }
+
           return res.status(500).json({
             success: false,
             message: "Failed to upload images",
@@ -175,7 +166,7 @@ export const updateComplaint = async (req, res) => {
       }
 
       for (const img of complaint.images) {
-        await cloudinary.uploader.destroy(img.publicId);
+        deleteFromCloudinary(img.publicId);
       }
 
       updatedData.images = uploadedImages;
@@ -184,7 +175,7 @@ export const updateComplaint = async (req, res) => {
     const updatedComplaint = await Complaint.findByIdAndUpdate(
       id,
       { $set: updatedData },
-      { new: true }
+      { new: true },
     ).populate("userId", "name email");
 
     res.status(200).json({
@@ -233,15 +224,11 @@ export const deleteComplaint = async (req, res) => {
       });
     }
 
-    for (const img of complaint.images) {
-      try {
-        await cloudinary.uploader.destroy(img.publicId);
-      } catch (deleteError) {
-        console.error("Error deleting image from Cloudinary:", deleteError);
-      }
-    }
-
     await Complaint.findByIdAndDelete(id);
+
+    for (const img of complaint.images) {
+      deleteFromCloudinary(img.publicId);
+    }
 
     res.status(200).json({
       success: true,
