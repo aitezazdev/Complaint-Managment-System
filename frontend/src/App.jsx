@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import AdminDashboard from "./pages/AdminDashboard";
-import UserDashboard from "./pages/userDashboard";
+import UserDashboard from "./pages/UserDashboard";
 
 function App() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
