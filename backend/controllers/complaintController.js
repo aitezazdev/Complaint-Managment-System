@@ -1,0 +1,257 @@
+import { Complaint } from "../models/complaintModel.js";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
+
+// Create a new complaint
+export const createComplaint = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { title, description, category, address, priority } = req.body;
+
+    if (!title || !description || !category || !address) {
+      return res.status(400).json({
+        success: false,
+        message: "Title, description, category, and address are required",
+      });
+    }
+
+    const uploadedImages = [];
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const uploadImage = () =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: "complaint_images",
+                allowed_formats: ["jpg", "jpeg", "png", "webp"],
+                resource_type: "image",
+              },
+              (error, result) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
+              }
+            );
+            streamifier.createReadStream(file.buffer).pipe(stream);
+          });
+
+        try {
+          const result = await uploadImage();
+          uploadedImages.push({
+            url: result.secure_url,
+            publicId: result.public_id,
+          });
+        } catch (uploadError) {
+          for (const img of uploadedImages) {
+            await cloudinary.uploader.destroy(img.publicId);
+          }
+          return res.status(500).json({
+            success: false,
+            message: "Failed to upload images",
+            error: uploadError.message,
+          });
+        }
+      }
+    }
+
+    const newComplaint = await Complaint.create({
+      userId,
+      title,
+      description,
+      category,
+      address,
+      images: uploadedImages,
+      priority: priority || "Medium",
+    });
+
+    await newComplaint.populate("userId", "name email");
+
+    res.status(201).json({
+      success: true,
+      message: "Complaint created successfully",
+      data: newComplaint,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
+// Update an existing complaint
+export const updateComplaint = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const userRole = req.user.role;
+
+    const complaint = await Complaint.findById(id);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    const isOwner = complaint.userId.toString() === userId.toString();
+    const isAdmin = userRole === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to update this complaint",
+      });
+    }
+
+    if (!isAdmin && complaint.status !== "Pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Can only update pending complaints",
+      });
+    }
+
+    const updatedData = {};
+
+    if (req.body.title) updatedData.title = req.body.title;
+    if (req.body.description) updatedData.description = req.body.description;
+    if (req.body.category) updatedData.category = req.body.category;
+    if (req.body.address) updatedData.address = req.body.address;
+    if (req.body.priority) updatedData.priority = req.body.priority;
+
+    if (isAdmin) {
+      if (req.body.status) updatedData.status = req.body.status;
+      if (req.body.adminNotes !== undefined) updatedData.adminNotes = req.body.adminNotes;
+      
+      if (req.body.status === "Resolved" && !complaint.resolvedAt) {
+        updatedData.resolvedAt = new Date();
+      }
+    }
+
+    if (req.files && req.files.length > 0) {
+      const uploadedImages = [];
+
+      for (const file of req.files) {
+        const uploadImage = () =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: "complaint_images",
+                allowed_formats: ["jpg", "jpeg", "png", "webp"],
+                resource_type: "image",
+              },
+              (error, result) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
+              }
+            );
+            streamifier.createReadStream(file.buffer).pipe(stream);
+          });
+
+        try {
+          const result = await uploadImage();
+          uploadedImages.push({
+            url: result.secure_url,
+            publicId: result.public_id,
+          });
+        } catch (uploadError) {
+          for (const img of uploadedImages) {
+            await cloudinary.uploader.destroy(img.publicId);
+          }
+          return res.status(500).json({
+            success: false,
+            message: "Failed to upload images",
+            error: uploadError.message,
+          });
+        }
+      }
+
+      for (const img of complaint.images) {
+        await cloudinary.uploader.destroy(img.publicId);
+      }
+
+      updatedData.images = uploadedImages;
+    }
+
+    const updatedComplaint = await Complaint.findByIdAndUpdate(
+      id,
+      { $set: updatedData },
+      { new: true }
+    ).populate("userId", "name email");
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint updated successfully",
+      data: updatedComplaint,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteComplaint = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const userRole = req.user.role;
+
+    const complaint = await Complaint.findById(id);
+
+    if (!complaint) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    const isOwner = complaint.userId.toString() === userId.toString();
+    const isAdmin = userRole === "admin";
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this complaint",
+      });
+    }
+
+    if (!isAdmin && complaint.status !== "Pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Can only delete pending complaints",
+      });
+    }
+
+    for (const img of complaint.images) {
+      try {
+        await cloudinary.uploader.destroy(img.publicId);
+      } catch (deleteError) {
+        console.error("Error deleting image from Cloudinary:", deleteError);
+      }
+    }
+
+    await Complaint.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};

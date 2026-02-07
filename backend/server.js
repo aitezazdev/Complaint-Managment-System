@@ -2,6 +2,7 @@ import { connectDB } from "./config/db.js";
 import { configDotenv } from "dotenv";
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
+import complaintRoutes from "./routes/complaintRoutes.js";
 import cors from "cors";
 
 const app = express();
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/auth", authRoutes);
+app.use("/api/complaints", complaintRoutes);
 
 app.listen(5000, () => {
   console.log("Server is running on port 5000");
