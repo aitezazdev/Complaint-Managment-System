@@ -2,15 +2,26 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import AdminDashboard from "./pages/AdminDashboard";
-import UserDashboard from "./pages/UserDashboard";
+import AdminLayout from "./layout/AdminLayout";
+import UserLayout from "./layout/UserLayout";
+
+// Protected Route Component
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (requiredRole && user?.role !== requiredRole) {
+    return <Navigate to="/" />;
+  }
+
+  return children;
+};
 
 function App() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const isAdmin = user?.role === "admin";
-  const isUser = user?.role === "user";
-  
-  console.log(user);
 
   return (
     <Routes>
@@ -22,49 +33,51 @@ function App() {
         path="/register"
         element={!isAuthenticated ? <Register /> : <Navigate to="/" />}
       />
-      
-      {/* Main Dashboard Route - Redirects based on role */}
+
       <Route
         path="/"
         element={
           isAuthenticated ? (
-            isAdmin ? (
-              <Navigate to="/admin/dashboard" />
+            user?.role === "admin" ? (
+              <Navigate to="/admin/users" replace />
             ) : (
-              <Navigate to="/user/dashboard" />
+              <Navigate to="/user/complaints" replace />
             )
           ) : (
-            <Navigate to="/login" />
+            <Navigate to="/login" replace />
           )
         }
       />
 
-      {/* Admin Dashboard - Protected */}
       <Route
-        path="/admin/dashboard"
+        path="/admin"
         element={
-          isAuthenticated && isAdmin ? (
-            <AdminDashboard />
-          ) : (
-            <Navigate to="/" />
-          )
+          <ProtectedRoute requiredRole="admin">
+            <AdminLayout />
+          </ProtectedRoute>
         }
-      />
+      >
+        <Route path="users" element={<div>Admin Users Page</div>} />
+        <Route path="complaints" element={<div>Admin Complaints Page</div>} />
+        <Route path="settings" element={<div>Admin Settings Page</div>} />
+        <Route index element={<Navigate to="/admin/users" replace />} />
+      </Route>
 
-      {/* User Dashboard - Protected */}
       <Route
-        path="/user/dashboard"
+        path="/user"
         element={
-          isAuthenticated && isUser ? (
-            <UserDashboard />
-          ) : (
-            <Navigate to="/" />
-          )
+          <ProtectedRoute requiredRole="user">
+            <UserLayout />
+          </ProtectedRoute>
         }
-      />
+      >
+        <Route path="complaints" element={<div>User Complaints Page</div>} />
+        <Route path="new-complaint" element={<div>New Complaint Page</div>} />
+        <Route path="profile" element={<div>User Profile Page</div>} />
+        <Route index element={<Navigate to="/user/complaints" replace />} />
+      </Route>
 
-      {/* Catch all - redirect to home */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
