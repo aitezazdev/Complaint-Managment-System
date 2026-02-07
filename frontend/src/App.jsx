@@ -4,8 +4,9 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import AdminLayout from "./layout/AdminLayout";
 import UserLayout from "./layout/UserLayout";
+import AdminDashboard from "./pages/AdminDashboard";
+import UserDashboard from "./pages/UserDashboard";
 
-// Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
@@ -39,9 +40,9 @@ function App() {
         element={
           isAuthenticated ? (
             user?.role === "admin" ? (
-              <Navigate to="/admin/users" replace />
+              <Navigate to="/admin/dashboard" replace />
             ) : (
-              <Navigate to="/user/complaints" replace />
+              <Navigate to="/user/dashboard" replace />
             )
           ) : (
             <Navigate to="/login" replace />
@@ -57,10 +58,10 @@ function App() {
           </ProtectedRoute>
         }
       >
+        <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<div>Admin Users Page</div>} />
         <Route path="complaints" element={<div>Admin Complaints Page</div>} />
         <Route path="settings" element={<div>Admin Settings Page</div>} />
-        <Route index element={<Navigate to="/admin/users" replace />} />
       </Route>
 
       <Route
@@ -71,10 +72,10 @@ function App() {
           </ProtectedRoute>
         }
       >
+        <Route path="dashboard" element={<UserDashboard />} />
         <Route path="complaints" element={<div>User Complaints Page</div>} />
         <Route path="new-complaint" element={<div>New Complaint Page</div>} />
         <Route path="profile" element={<div>User Profile Page</div>} />
-        <Route index element={<Navigate to="/user/complaints" replace />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

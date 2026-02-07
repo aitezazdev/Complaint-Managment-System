@@ -22,6 +22,17 @@ const UserLayout = () => {
         
         <nav className="mt-8">
           <NavLink
+            to="/user/dashboard"
+            className={({ isActive }) =>
+              `block px-4 py-3 hover:bg-blue-700 ${
+                isActive ? 'bg-blue-700 border-l-4 border-white' : ''
+              }`
+            }
+          >
+            Dashboard
+          </NavLink>
+          
+          <NavLink
             to="/user/complaints"
             className={({ isActive }) =>
               `block px-4 py-3 hover:bg-blue-700 ${
@@ -65,7 +76,6 @@ const UserLayout = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <div className="p-8">
           <Outlet />
