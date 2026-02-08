@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { login, register } from "../../services/authApi";
+import { toast } from "react-toastify";
 
 const token = localStorage.getItem("authToken");
 const userFromStorage = localStorage.getItem("user")
@@ -19,8 +20,10 @@ export const loginUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await login(userData);
+      toast.success("Login successful!");
       return response;
     } catch (error) {
+      toast.error("Login failed. Please check your credentials.");
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   },
@@ -31,6 +34,9 @@ export const registerUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       const response = await register(userData);
+      if (response?.success) {
+        toast.success(response.message);
+      }
       return response;
     } catch (error) {
       return rejectWithValue(

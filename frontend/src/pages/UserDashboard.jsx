@@ -2,20 +2,9 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserComplaints } from "../store/slice/complaint";
-import {
-  FiPlus,
-  FiClock,
-  FiCheckCircle,
-  FiAlertCircle,
-  FiFileText,
-  FiTrendingUp,
-  FiEye,
-  FiArrowRight,
-  FiEdit2,
-  FiTrash2,
-} from "react-icons/fi";
 import { PageLoader } from "../utils/Loading";
 import ComplaintModal from "../components/ComplaintModal.jsx";
+import { MapPin, Calendar, Eye, Pencil, FileText } from "lucide-react";
 
 const UserDashboard = () => {
   const dispatch = useDispatch();
@@ -23,10 +12,9 @@ const UserDashboard = () => {
   const { userComplaints, userComplaintsLoaded } = useSelector((state) => state.complaint);
   const { user } = useSelector((state) => state.auth);
 
-  // Modal state
   const [modalState, setModalState] = useState({
     isOpen: false,
-    mode: 'create', // 'create', 'view', 'edit'
+    mode: 'create',
     complaint: null,
   });
 
@@ -73,7 +61,7 @@ const UserDashboard = () => {
       case "Rejected":
         return "bg-rose-50 text-rose-700 border-rose-200";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
+        return "bg-slate-50 text-slate-700 border-slate-200";
     }
   };
 
@@ -94,126 +82,110 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white border-b border-gray-200 px-6 py-5 mb-6">
+        {/* Header */}
+        <div className="bg-white border-b border-slate-200 px-6 py-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
-                Welcome back, {user?.name || "User"}!
+              <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
+                Welcome back, {user?.name || "User"}
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Here's an overview of your complaints
+              <p className="text-sm text-slate-600 mt-1">
+                Track and manage your complaints
               </p>
             </div>
             <button
               onClick={() => openModal('create')}
-              className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
-              <FiPlus className="w-4 h-4" />
-              New Complaint
+              className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
+              Submit Complaint
             </button>
           </div>
         </div>
 
         <div className="px-6 pb-6">
+          {/* Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-gray-50 rounded-lg">
-                  <FiFileText className="w-5 h-5 text-gray-600" />
-                </div>
-              </div>
-              <p className="text-2xl font-semibold text-gray-900 mb-1">
+            <div className="bg-white rounded-lg border border-slate-200 p-5">
+              <p className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
+                Total
+              </p>
+              <p className="text-2xl font-semibold text-slate-900">
                 {stats.total}
               </p>
-              <p className="text-xs text-gray-600">Total Complaints</p>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-amber-50 rounded-lg">
-                  <FiClock className="w-5 h-5 text-amber-600" />
-                </div>
-              </div>
-              <p className="text-2xl font-semibold text-amber-600 mb-1">
+            <div className="bg-white rounded-lg border border-slate-200 p-5">
+              <p className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
+                Pending
+              </p>
+              <p className="text-2xl font-semibold text-amber-600">
                 {stats.pending}
               </p>
-              <p className="text-xs text-gray-600">Pending</p>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <FiTrendingUp className="w-5 h-5 text-blue-600" />
-                </div>
-              </div>
-              <p className="text-2xl font-semibold text-blue-600 mb-1">
+            <div className="bg-white rounded-lg border border-slate-200 p-5">
+              <p className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
+                In Progress
+              </p>
+              <p className="text-2xl font-semibold text-blue-600">
                 {stats.inProgress}
               </p>
-              <p className="text-xs text-gray-600">In Progress</p>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-emerald-50 rounded-lg">
-                  <FiCheckCircle className="w-5 h-5 text-emerald-600" />
-                </div>
-              </div>
-              <p className="text-2xl font-semibold text-emerald-600 mb-1">
+            <div className="bg-white rounded-lg border border-slate-200 p-5">
+              <p className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
+                Resolved
+              </p>
+              <p className="text-2xl font-semibold text-emerald-600">
                 {stats.resolved}
               </p>
-              <p className="text-xs text-gray-600">Resolved</p>
             </div>
 
-            {/* Rejected */}
-            <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <div className="p-2 bg-rose-50 rounded-lg">
-                  <FiAlertCircle className="w-5 h-5 text-rose-600" />
-                </div>
-              </div>
-              <p className="text-2xl font-semibold text-rose-600 mb-1">
+            <div className="bg-white rounded-lg border border-slate-200 p-5">
+              <p className="text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">
+                Rejected
+              </p>
+              <p className="text-2xl font-semibold text-rose-600">
                 {stats.rejected}
               </p>
-              <p className="text-xs text-gray-600">Rejected</p>
             </div>
           </div>
 
-          {/* Two Column Layout */}
+          {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Complaints - Takes 2 columns */}
-            <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200">
-              <div className="px-5 py-4 border-b border-gray-200">
+            {/* Recent Activity */}
+            <div className="lg:col-span-2 bg-white rounded-lg border border-slate-200">
+              <div className="px-6 py-4 border-b border-slate-200">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-base font-semibold text-slate-900">
                     Recent Activity
                   </h2>
                   {userComplaints.length > 0 && (
                     <button
                       onClick={() => navigate("/user/complaints")}
-                      className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                      className="text-sm text-slate-900 hover:text-slate-700 font-medium transition-colors">
                       View All
-                      <FiArrowRight className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               </div>
 
-              <div className="divide-y divide-gray-200">
+              <div className="divide-y divide-slate-100">
                 {recentComplaints.length === 0 ? (
                   <div className="p-12 text-center">
-                    <div className="text-gray-300 text-5xl mb-4">📋</div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FileText className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h3 className="text-base font-medium text-slate-900 mb-2">
                       No complaints yet
                     </h3>
-                    <p className="text-sm text-gray-600 mb-6">
-                      You haven't submitted any complaints yet. Get started by
-                      submitting your first complaint.
+                    <p className="text-sm text-slate-600 mb-6 max-w-sm mx-auto">
+                      Submit your first complaint to start tracking issues and resolutions
                     </p>
                     <button
                       onClick={() => openModal('create')}
-                      className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
-                      <FiPlus className="w-4 h-4" />
+                      className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
                       Submit First Complaint
                     </button>
                   </div>
@@ -221,84 +193,74 @@ const UserDashboard = () => {
                   recentComplaints.map((complaint) => (
                     <div
                       key={complaint._id}
-                      className="p-5 hover:bg-gray-50 transition-colors">
+                      className="p-5 hover:bg-slate-50 transition-colors">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start gap-3">
-                            {/* Image or Placeholder */}
                             {complaint.images && complaint.images.length > 0 ? (
                               <div className="relative flex-shrink-0">
                                 <img
                                   src={complaint.images[0].url}
                                   alt={complaint.title}
-                                  className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                  className="w-14 h-14 object-cover rounded-lg border border-slate-200"
                                 />
                                 {complaint.images.length > 1 && (
-                                  <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
+                                  <div className="absolute -bottom-1 -right-1 bg-slate-900 text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
                                     +{complaint.images.length - 1}
                                   </div>
                                 )}
                               </div>
                             ) : (
-                              <div className="w-16 h-16 flex-shrink-0 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                                <svg
-                                  className="w-7 h-7 text-gray-400"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                  />
+                              <div className="w-14 h-14 flex-shrink-0 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center">
+                                <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 mb-1">
+                              <h3 className="font-medium text-slate-900 mb-1 text-sm">
                                 {complaint.title}
                               </h3>
-                              <p className="text-sm text-gray-600 mb-2 line-clamp-1">
+                              <p className="text-sm text-slate-600 mb-2 line-clamp-1">
                                 {complaint.description}
                               </p>
                               <div className="flex flex-wrap gap-2 mb-2">
-                                <span
-                                  className={`px-2 py-0.5 rounded text-xs font-medium border ${getStatusColor(
-                                    complaint.status,
-                                  )}`}>
+                                <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getStatusColor(complaint.status)}`}>
                                   {complaint.status}
                                 </span>
-                                <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-700 border border-gray-200">
+                                <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
                                   {complaint.category}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-3 text-xs text-gray-500">
-                                <span>📍 {complaint.address}</span>
-                                <span>
-                                  📅 {formatDate(complaint.createdAt)}
+                              <div className="flex items-center gap-3 text-xs text-slate-500">
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3.5 h-3.5" />
+                                  {complaint.address}
+                                </span>
+                                <span>•</span>
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-3.5 h-3.5" />
+                                  {formatDate(complaint.createdAt)}
                                 </span>
                               </div>
                             </div>
                           </div>
                         </div>
                         
-                        {/* Action Buttons */}
                         <div className="flex gap-2 flex-shrink-0">
                           <button
                             onClick={() => openModal('view', complaint)}
-                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
+                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200 font-medium"
                             title="View Details">
-                            <FiEye className="w-4 h-4" />
+                            <Eye className="w-4 h-4" />
                             <span className="hidden sm:inline">View</span>
                           </button>
                           {canEdit(complaint) && (
                             <button
                               onClick={() => openModal('edit', complaint)}
-                              className="flex items-center gap-1.5 px-3 py-2 text-sm text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors border border-emerald-100"
+                              className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200 font-medium"
                               title="Edit Complaint">
-                              <FiEdit2 className="w-4 h-4" />
+                              <Pencil className="w-4 h-4" />
                               <span className="hidden sm:inline">Edit</span>
                             </button>
                           )}
@@ -310,158 +272,76 @@ const UserDashboard = () => {
               </div>
             </div>
 
-            {/* Status Overview - Takes 1 column */}
+            {/* Sidebar */}
             <div className="space-y-6">
-              {/* Status Distribution */}
               {userComplaints.length > 0 && (
-                <div className="bg-white rounded-lg border border-gray-200 p-5">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Status Distribution
-                  </h2>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                        <span className="text-sm text-gray-700">Pending</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-gray-900">
-                          {stats.pending}
-                        </span>
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-amber-500 h-2 rounded-full transition-all"
-                            style={{
-                              width: `${
-                                stats.total > 0
-                                  ? (stats.pending / stats.total) * 100
-                                  : 0
-                              }%`,
-                            }}></div>
-                        </div>
-                      </div>
+                <>
+                  {/* Status Distribution */}
+                  <div className="bg-white rounded-lg border border-slate-200 p-5">
+                    <h2 className="text-base font-semibold text-slate-900 mb-4">
+                      Status Breakdown
+                    </h2>
+                    <div className="space-y-3">
+                      {[
+                        { label: 'Pending', value: stats.pending, color: 'bg-amber-500' },
+                        { label: 'In Progress', value: stats.inProgress, color: 'bg-blue-500' },
+                        { label: 'Resolved', value: stats.resolved, color: 'bg-emerald-500' },
+                        { label: 'Rejected', value: stats.rejected, color: 'bg-rose-500' }
+                      ].map((item) => {
+                        const percentage = stats.total > 0 ? (item.value / stats.total) * 100 : 0;
+                        return (
+                          <div key={item.label}>
+                            <div className="flex justify-between text-sm mb-1.5">
+                              <span className="text-slate-700 font-medium">{item.label}</span>
+                              <span className="text-slate-600">{item.value}</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                              <div
+                                className={`${item.color} h-1.5 rounded-full transition-all duration-500`}
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
+                  </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                        <span className="text-sm text-gray-700">
-                          In Progress
+                  {/* Quick Summary */}
+                  <div className="bg-white rounded-lg border border-slate-200 p-5">
+                    <h2 className="text-base font-semibold text-slate-900 mb-4">
+                      Summary
+                    </h2>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                        <span className="text-sm text-slate-600">Total Submitted</span>
+                        <span className="text-sm font-semibold text-slate-900">{stats.total}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                        <span className="text-sm text-slate-600">Active Cases</span>
+                        <span className="text-sm font-semibold text-blue-600">
+                          {stats.pending + stats.inProgress}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-gray-900">
-                          {stats.inProgress}
+                      <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                        <span className="text-sm text-slate-600">Completed</span>
+                        <span className="text-sm font-semibold text-emerald-600">{stats.resolved}</span>
+                      </div>
+                      <div className="flex items-center justify-between py-2">
+                        <span className="text-sm text-slate-600">Resolution Rate</span>
+                        <span className="text-sm font-semibold text-slate-900">
+                          {stats.total > 0 ? `${Math.round((stats.resolved / stats.total) * 100)}%` : "0%"}
                         </span>
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full transition-all"
-                            style={{
-                              width: `${
-                                stats.total > 0
-                                  ? (stats.inProgress / stats.total) * 100
-                                  : 0
-                              }%`,
-                            }}></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                        <span className="text-sm text-gray-700">Resolved</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-gray-900">
-                          {stats.resolved}
-                        </span>
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-emerald-500 h-2 rounded-full transition-all"
-                            style={{
-                              width: `${
-                                stats.total > 0
-                                  ? (stats.resolved / stats.total) * 100
-                                  : 0
-                              }%`,
-                            }}></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                        <span className="text-sm text-gray-700">Rejected</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-gray-900">
-                          {stats.rejected}
-                        </span>
-                        <div className="w-24 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-rose-500 h-2 rounded-full transition-all"
-                            style={{
-                              width: `${
-                                stats.total > 0
-                                  ? (stats.rejected / stats.total) * 100
-                                  : 0
-                              }%`,
-                            }}></div>
-                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Quick Stats Summary */}
-              {userComplaints.length > 0 && (
-                <div className="bg-white rounded-lg border border-gray-200 p-5">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    Quick Summary
-                  </h2>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">
-                        Total Submitted
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {stats.total}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Active</span>
-                      <span className="text-sm font-semibold text-blue-600">
-                        {stats.pending + stats.inProgress}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Completed</span>
-                      <span className="text-sm font-semibold text-emerald-600">
-                        {stats.resolved}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-sm text-gray-600">
-                        Resolution Rate
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900">
-                        {stats.total > 0
-                          ? `${Math.round((stats.resolved / stats.total) * 100)}%`
-                          : "0%"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                </>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Complaint Modal */}
       <ComplaintModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
