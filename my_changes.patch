@@ -1,0 +1,587 @@
+diff --cc frontend/src/App.jsx
+index 367f519,34c87e9..0000000
+--- a/frontend/src/App.jsx
++++ b/frontend/src/App.jsx
+@@@ -5,10 -5,10 +5,11 @@@ import Register from "./components/auth
+  import AdminLayout from "./layout/AdminLayout";
+  import UserLayout from "./layout/UserLayout";
+  import AdminDashboard from "./pages/AdminDashboard";
+- import UserDashboard from "./pages/UserDashboard";
+- import UserComplaints from "./pages/UserComplaints";
+ -// import AdminUsers from "./pages/AdminUsers";
+ +import AdminComplaints from "./pages/AdminComplaints";
+ +import AllUsers from "./pages/AllUsers";
++ import UserDashboard from "./pages/UserDashboard";
++ import UserComplaints from "./pages/UserComplaints";
++ import UserProfile from "./pages/UserProfile";
+  import { Toaster } from "react-hot-toast";
+  import PageLoader from "./utils/Loading";
+  
+@@@ -32,29 -32,29 +33,29 @@@ const ProtectedRoute = ({ children, req
+  
+  function App() {
+    const { isAuthenticated, user } = useSelector((state) => state.auth);
+-   
++ 
+    return (
+      <>
+--      <Toaster 
+++      <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+--            background: '#363636',
+--            color: '#fff',
+++            background: "#363636",
+++            color: "#fff",
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+--              primary: '#10b981',
+--              secondary: '#fff',
+++              primary: "#10b981",
+++              secondary: "#fff",
+              },
+            },
+            error: {
+              duration: 4000,
+              iconTheme: {
+--              primary: '#ef4444',
+--              secondary: '#fff',
+++              primary: "#ef4444",
+++              secondary: "#fff",
+              },
+            },
+          }}
+@@@ -88,29 -90,32 +91,30 @@@
+              <ProtectedRoute requiredRole="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+--          }
+--        >
+++          }>
+            <Route path="dashboard" element={<AdminDashboard />} />
+ -          {/* <Route path="users" element={<AdminUsers />} /> */}
+ -          <Route path="complaints" element={<div>Admin Complaints Page</div>} />
+ +          <Route path="users" element={<AllUsers />} />
+ +          <Route path="complaints" element={<AdminComplaints />} />
+            <Route path="settings" element={<div>Admin Settings Page</div>} />
+          </Route>
++ 
++         {/* User Routes */}
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute requiredRole="user">
+                <UserLayout />
+              </ProtectedRoute>
+--          }
+--        >
+++          }>
+            <Route path="dashboard" element={<UserDashboard />} />
+            <Route path="complaints" element={<UserComplaints />} />
+-           <Route path="profile" element={<div>User Profile Page</div>} />
++           <Route path="profile" element={<UserProfile />} />
+          </Route>
++ 
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </>
+    );
+  }
+  
+--export default App;
+++export default App;
+diff --git a/backend/models/userModel.js b/backend/models/userModel.js
+index 4cae813..e520062 100644
+--- a/backend/models/userModel.js
++++ b/backend/models/userModel.js
+@@ -1,40 +1,71 @@
+ import mongoose from "mongoose";
+ import bcrypt from "bcryptjs";
+ 
+-const userSchema = new mongoose.Schema({
+-  name: {
+-    type: String,
+-    required: true,
++const userSchema = new mongoose.Schema(
++  {
++    name: {
++      type: String,
++      required: true,
++      trim: true,
++    },
++    email: {
++      type: String,
++      required: true,
++      unique: true,
++      lowercase: true,
++      trim: true,
++    },
++    password: {
++      type: String,
++      required: true,
++      minlength: 6,
++    },
++    role: {
++      type: String,
++      enum: ["user", "admin"],
++      default: "user",
++    },
++    profilePicture: {
++      url: {
++        type: String,
++        default: "",
++      },
++      publicId: {
++        type: String,
++        default: "",
++      },
++    },
+   },
+-  email: {
+-    type: String,
+-    required: true,
+-    unique: true,
+-  },
+-  password: {
+-    type: String,
+-    required: true,
+-  },
+-  role: {
+-    type: String,
+-    enum: ["user", "admin"],
+-    default: "user",
+-  },
+-}, { timestamps: true });
++  { timestamps: true }
++);
+ 
+ userSchema.pre("save", async function () {
+-  if (!this.isModified("password")) {
+-    return;
+-  }
++  if (!this.isModified("password")) return;
+ 
+   const salt = await bcrypt.genSalt(10);
+   this.password = await bcrypt.hash(this.password, salt);
+ });
+ 
++userSchema.pre("findOneAndUpdate", async function () {
++  const update = this.getUpdate();
++
++  if (!update) return;
++
++  if (update.$set && update.$set.password) {
++    const salt = await bcrypt.genSalt(10);
++    update.$set.password = await bcrypt.hash(update.$set.password, salt);
++  }
++
++  if (update.password) {
++    const salt = await bcrypt.genSalt(10);
++    update.password = await bcrypt.hash(update.password, salt);
++  }
++});
++
+ userSchema.methods.matchPassword = async function (enteredPassword) {
+   return await bcrypt.compare(enteredPassword, this.password);
+ };
+ 
+ const User = mongoose.model("User", userSchema);
+ 
+-export default User;
+\ No newline at end of file
++export default User;
+diff --git a/backend/server.js b/backend/server.js
+index 9c479bf..5aecd9e 100644
+--- a/backend/server.js
++++ b/backend/server.js
+@@ -4,7 +4,7 @@ import express from "express";
+ import authRoutes from "./routes/authRoutes.js";
+ import complaintRoutes from "./routes/complaintRoutes.js";
+ import adminRoutes from "./routes/adminRoutes.js";
+-
++import userRoutes from "./routes/userRoutes.js";
+ import cors from "cors";
+ 
+ const app = express();
+@@ -16,13 +16,16 @@ app.use(cors());
+ configDotenv();
+ 
+ connectDB();
++
+ app.get("/", (req, res) => {
+   res.send("API is running...");
+-})
++});
+ 
++// API Routes
+ app.use("/api/admin", adminRoutes);
+ app.use("/api/auth", authRoutes);
+ app.use("/api/complaint", complaintRoutes);
++app.use("/api/users", userRoutes);
+ 
+ app.listen(5000, () => {
+   console.log("Server is running on port 5000");
+diff --git a/frontend/src/main.jsx b/frontend/src/main.jsx
+index 34b981f..3b12659 100644
+--- a/frontend/src/main.jsx
++++ b/frontend/src/main.jsx
+@@ -1,12 +1,12 @@
+-import { StrictMode } from 'react'
+-import { createRoot } from 'react-dom/client'
+-import './index.css'
+-import App from './App.jsx'
++import { StrictMode } from "react";
++import { createRoot } from "react-dom/client";
++import "./index.css";
++import App from "./App.jsx";
+ import { Provider } from "react-redux";
+ import { store } from "./store/store.js";
+ import { BrowserRouter as Router } from "react-router-dom";
+ 
+-createRoot(document.getElementById('root')).render(
++createRoot(document.getElementById("root")).render(
+   <StrictMode>
+     <Provider store={store}>
+       <Router>
+@@ -14,4 +14,4 @@ createRoot(document.getElementById('root')).render(
+       </Router>
+     </Provider>
+   </StrictMode>,
+-)
++);
+diff --git a/frontend/src/pages/UserComplaints.jsx b/frontend/src/pages/UserComplaints.jsx
+index b0b862e..55e7cfd 100644
+--- a/frontend/src/pages/UserComplaints.jsx
++++ b/frontend/src/pages/UserComplaints.jsx
+@@ -16,16 +16,14 @@ import {
+   FiSearch,
+ } from "react-icons/fi";
+ import { toast } from "react-hot-toast";
+-import { PageLoader } from "../utils/Loading";
+-import ComplaintModal from "../components/ComplaintModal.jsx";
+-import ConfirmDialog from "../components/ConfirmDialog.jsx";
++import { PageLoader, InlineLoader } from "../utils/Loading";
+ 
+ const UserComplaints = () => {
+   const dispatch = useDispatch();
+   const navigate = useNavigate();
+   const [searchParams, setSearchParams] = useSearchParams();
+ 
+-  const { userComplaints, userComplaintsLoaded, error } = useSelector(
++  const { userComplaints, userComplaintsLoaded, loading, error } = useSelector(
+     (state) => state.complaint,
+   );
+ 
+@@ -37,23 +35,11 @@ const UserComplaints = () => {
+     search: "",
+   });
+   const [showFilters, setShowFilters] = useState(false);
+-  
+-  // Modal state
+-  const [modalState, setModalState] = useState({
+-    isOpen: false,
+-    mode: 'create', // 'create', 'view', 'edit'
+-    complaint: null,
+-  });
+-
+-  // Delete confirmation state
+-  const [deleteConfirmState, setDeleteConfirmState] = useState({
++  const [deleteModal, setDeleteModal] = useState({
+     isOpen: false,
+     complaintId: null,
+-    complaintTitle: '',
+   });
+ 
+-  const [deletingId, setDeletingId] = useState(null);
+-
+   useEffect(() => {
+     dispatch(fetchUserComplaints());
+   }, [dispatch]);
+@@ -91,41 +77,13 @@ const UserComplaints = () => {
+     setFilteredComplaints(filtered);
+   }, [userComplaints, filters]);
+ 
+-  const openModal = (mode, complaint = null) => {
+-    setModalState({
+-      isOpen: true,
+-      mode,
+-      complaint,
+-    });
+-  };
+-
+-  const closeModal = () => {
+-    setModalState({
+-      isOpen: false,
+-      mode: 'create',
+-      complaint: null,
+-    });
+-  };
+-  const handleDeleteClick = (complaint) => {
+-    setDeleteConfirmState({
+-      isOpen: true,
+-      complaintId: complaint._id,
+-      complaintTitle: complaint.title,
+-    });
+-  };
+-
+-  const handleDeleteConfirm = async () => {
+-    if (!deleteConfirmState.complaintId) return;
+-    
+-    setDeletingId(deleteConfirmState.complaintId);
++  const handleDelete = async (id) => {
+     try {
+-      await dispatch(deleteComplaintAsync(deleteConfirmState.complaintId)).unwrap();
+-      toast.success('Complaint deleted successfully!');
+-      setDeleteConfirmState({ isOpen: false, complaintId: null, complaintTitle: '' });
++      await dispatch(deleteComplaintAsync(id)).unwrap();
++      toast.success("Complaint deleted successfully");
++      setDeleteModal({ isOpen: false, complaintId: null });
+     } catch (error) {
+-      toast.error(error || 'Failed to delete complaint');
+-    } finally {
+-      setDeletingId(null);
++      toast.error(error || "Failed to delete complaint");
+     }
+   };
+ 
+@@ -173,6 +131,10 @@ const UserComplaints = () => {
+     return complaint.status === "Pending";
+   };
+ 
++  const canDelete = (complaint) => {
++    return complaint.status === "Pending";
++  };
++
+   const resetFilters = () => {
+     setFilters({
+       status: "",
+@@ -187,7 +149,7 @@ const UserComplaints = () => {
+     filters.status || filters.category || filters.priority || filters.search;
+ 
+   if (!userComplaintsLoaded) {
+-    return <PageLoader message="Loading complaints..." />;
++    return <PageLoader message="Loading dashboard..." />;
+   }
+ 
+   return (
+@@ -205,7 +167,7 @@ const UserComplaints = () => {
+               </p>
+             </div>
+             <button
+-              onClick={() => openModal('create')}
++              onClick={() => navigate("/user/new-complaint")}
+               className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
+               <FiPlus className="w-4 h-4" />
+               New Complaint
+@@ -294,10 +256,14 @@ const UserComplaints = () => {
+                       <option value="Sanitation">Sanitation</option>
+                       <option value="Water Supply">Water Supply</option>
+                       <option value="Electricity">Electricity</option>
+-                      <option value="Road">Road</option>
+-                      <option value="Street Light">Street Light</option>
+-                      <option value="Garbage">Garbage</option>
+-                      <option value="Others">Others</option>
++                      <option value="Roads">Roads</option>
++                      <option value="Public Safety">Public Safety</option>
++                      <option value="Noise Pollution">Noise Pollution</option>
++                      <option value="Garbage Collection">
++                        Garbage Collection
++                      </option>
++                      <option value="Street Lighting">Street Lighting</option>
++                      <option value="Other">Other</option>
+                     </select>
+                   </div>
+ 
+@@ -361,7 +327,7 @@ const UserComplaints = () => {
+               </p>
+               {userComplaints.length === 0 ? (
+                 <button
+-                  onClick={() => openModal('create')}
++                  onClick={() => navigate("/user/new-complaint")}
+                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
+                   <FiPlus className="w-4 h-4" />
+                   Submit Your First Complaint
+@@ -385,36 +351,12 @@ const UserComplaints = () => {
+                     {/* Left Section */}
+                     <div className="flex-1">
+                       <div className="flex items-start gap-4">
+-                        {/* Image or Placeholder */}
+-                        {complaint.images && complaint.images.length > 0 ? (
+-                          <div className="relative flex-shrink-0">
+-                            <img
+-                              src={complaint.images[0].url}
+-                              alt={complaint.title}
+-                              className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+-                            />
+-                            {complaint.images.length > 1 && (
+-                              <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+-                                +{complaint.images.length - 1}
+-                              </div>
+-                            )}
+-                          </div>
+-                        ) : (
+-                          <div className="w-20 h-20 flex-shrink-0 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+-                            <svg
+-                              className="w-8 h-8 text-gray-400"
+-                              fill="none"
+-                              stroke="currentColor"
+-                              viewBox="0 0 24 24"
+-                            >
+-                              <path
+-                                strokeLinecap="round"
+-                                strokeLinejoin="round"
+-                                strokeWidth={2}
+-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+-                              />
+-                            </svg>
+-                          </div>
++                        {complaint.images && complaint.images.length > 0 && (
++                          <img
++                            src={complaint.images[0].url}
++                            alt={complaint.title}
++                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0 border border-gray-200"
++                          />
+                         )}
+                         <div className="flex-1 min-w-0">
+                           <h3 className="text-lg font-medium text-gray-900 mb-1.5">
+@@ -471,7 +413,9 @@ const UserComplaints = () => {
+                     {/* Right Section - Actions */}
+                     <div className="flex lg:flex-col gap-2">
+                       <button
+-                        onClick={() => openModal('view', complaint)}
++                        onClick={() =>
++                          navigate(`/user/complaint/${complaint._id}`)
++                        }
+                         className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
+                         title="View Details">
+                         <FiEye className="w-4 h-4" />
+@@ -479,16 +423,23 @@ const UserComplaints = () => {
+                       </button>
+                       {canEdit(complaint) && (
+                         <button
+-                          onClick={() => openModal('edit', complaint)}
++                          onClick={() =>
++                            navigate(`/user/complaint/edit/${complaint._id}`)
++                          }
+                           className="flex items-center gap-1.5 px-3 py-2 text-sm text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors border border-emerald-100"
+                           title="Edit Complaint">
+                           <FiEdit2 className="w-4 h-4" />
+                           <span className="hidden sm:inline">Edit</span>
+                         </button>
+                       )}
+-                      {canEdit(complaint) && (
++                      {canDelete(complaint) && (
+                         <button
+-                          onClick={() => handleDeleteClick(complaint)}
++                          onClick={() =>
++                            setDeleteModal({
++                              isOpen: true,
++                              complaintId: complaint._id,
++                            })
++                          }
+                           className="flex items-center gap-1.5 px-3 py-2 text-sm text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors border border-rose-100"
+                           title="Delete Complaint">
+                           <FiTrash2 className="w-4 h-4" />
+@@ -504,28 +455,37 @@ const UserComplaints = () => {
+         </div>
+       </div>
+ 
+-      {/* Complaint Modal */}
+-      <ComplaintModal
+-        isOpen={modalState.isOpen}
+-        onClose={closeModal}
+-        mode={modalState.mode}
+-        complaintData={modalState.complaint}
+-      />
+-
+-      {/* Delete Confirmation Dialog */}
+-      <ConfirmDialog
+-        isOpen={deleteConfirmState.isOpen}
+-        onClose={() => setDeleteConfirmState({ isOpen: false, complaintId: null, complaintTitle: '' })}
+-        onConfirm={handleDeleteConfirm}
+-        title="Delete Complaint"
+-        message={`Are you sure you want to delete "${deleteConfirmState.complaintTitle}"? This action cannot be undone.`}
+-        confirmText="Delete"
+-        cancelText="Cancel"
+-        type="danger"
+-        loading={deletingId === deleteConfirmState.complaintId}
+-      />
++      {/* Delete Confirmation Modal */}
++      {deleteModal.isOpen && (
++        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
++          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
++            <h3 className="text-lg font-semibold text-gray-900 mb-2">
++              Delete Complaint
++            </h3>
++            <p className="text-sm text-gray-600 mb-6">
++              Are you sure you want to delete this complaint? This action cannot
++              be undone.
++            </p>
++            <div className="flex gap-3 justify-end">
++              <button
++                onClick={() =>
++                  setDeleteModal({ isOpen: false, complaintId: null })
++                }
++                className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
++                Cancel
++              </button>
++              <button
++                onClick={() => handleDelete(deleteModal.complaintId)}
++                disabled={loading}
++                className="px-4 py-2 text-sm text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
++                {loading ? <InlineLoader text="Deleting..." /> : "Delete"}
++              </button>
++            </div>
++          </div>
++        </div>
++      )}
+     </div>
+   );
+ };
+ 
+-export default UserComplaints;
+\ No newline at end of file
++export default UserComplaints;
+diff --git a/frontend/src/services/api.js b/frontend/src/services/api.js
+index 93aef2d..3348180 100644
+--- a/frontend/src/services/api.js
++++ b/frontend/src/services/api.js
+@@ -15,16 +15,10 @@ api.interceptors.request.use(
+       config.headers.Authorization = `Bearer ${token}`;
+     }
+ 
+-    // IMPORTANT: Don't modify data if it's FormData (for file uploads)
+     if (config.data instanceof FormData) {
+-      // Remove Content-Type header to let browser set it with boundary
+       delete config.headers["Content-Type"];
+       
+-      // Append metadata to FormData instead of replacing config.data
+-      config.data.append("appVersion", "1.0.0");
+-      config.data.append("platform", "web");
+     } else {
+-      // For regular JSON requests
+       config.data = {
+         ...config.data,
+         appVersion: "1.0.0",
+diff --git a/frontend/src/store/store.js b/frontend/src/store/store.js
+index 31f9545..b312b89 100644
+--- a/frontend/src/store/store.js
++++ b/frontend/src/store/store.js
+@@ -1,11 +1,13 @@
+ import { configureStore } from "@reduxjs/toolkit";
+ import authReducer from "./slice/auth";
+ import complaintReducer from "./slice/complaint";
++import userReducer from "./slice/user";
+ 
+ export const store = configureStore({
+   reducer: {
+     auth: authReducer,
+     complaint: complaintReducer,
++    user: userReducer,
+   },
+ });
+ 
