@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchUserComplaints } from "../store/slice/complaint";
@@ -11,14 +11,24 @@ import {
   FiTrendingUp,
   FiEye,
   FiArrowRight,
+  FiEdit2,
+  FiTrash2,
 } from "react-icons/fi";
 import { PageLoader } from "../utils/Loading";
+import ComplaintModal from "../components/ComplaintModal.jsx";
 
 const UserDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userComplaints, userComplaintsLoaded } = useSelector((state) => state.complaint);
   const { user } = useSelector((state) => state.auth);
+
+  // Modal state
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: 'create', // 'create', 'view', 'edit'
+    complaint: null,
+  });
 
   useEffect(() => {
     dispatch(fetchUserComplaints());
@@ -37,6 +47,22 @@ const UserDashboard = () => {
   const recentComplaints = [...userComplaints]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
+
+  const openModal = (mode, complaint = null) => {
+    setModalState({
+      isOpen: true,
+      mode,
+      complaint,
+    });
+  };
+
+  const closeModal = () => {
+    setModalState({
+      isOpen: false,
+      mode: 'create',
+      complaint: null,
+    });
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -61,6 +87,10 @@ const UserDashboard = () => {
     });
   };
 
+  const canEdit = (complaint) => {
+    return complaint.status === "Pending";
+  };
+
   if (!userComplaintsLoaded) {
     return <PageLoader message="Loading dashboard..." />;
   }
@@ -80,7 +110,7 @@ const UserDashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate("/user/new-complaint")}
+              onClick={() => openModal('create')}
               className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
               <FiPlus className="w-4 h-4" />
               New Complaint
@@ -189,7 +219,7 @@ const UserDashboard = () => {
                       submitting your first complaint.
                     </p>
                     <button
-                      onClick={() => navigate("/user/new-complaint")}
+                      onClick={() => openModal('create')}
                       className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
                       <FiPlus className="w-4 h-4" />
                       Submit First Complaint
@@ -199,21 +229,41 @@ const UserDashboard = () => {
                   recentComplaints.map((complaint) => (
                     <div
                       key={complaint._id}
-                      className="p-5 hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() =>
-                        navigate(`/user/complaint/${complaint._id}`)
-                      }>
+                      className="p-5 hover:bg-gray-50 transition-colors">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start gap-3">
-                            {complaint.images &&
-                              complaint.images.length > 0 && (
+                            {/* Image or Placeholder */}
+                            {complaint.images && complaint.images.length > 0 ? (
+                              <div className="relative flex-shrink-0">
                                 <img
                                   src={complaint.images[0].url}
                                   alt={complaint.title}
-                                  className="w-16 h-16 object-cover rounded-lg flex-shrink-0 border border-gray-200"
+                                  className="w-16 h-16 object-cover rounded-lg border border-gray-200"
                                 />
-                              )}
+                                {complaint.images.length > 1 && (
+                                  <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white">
+                                    +{complaint.images.length - 1}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 flex-shrink-0 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                                <svg
+                                  className="w-7 h-7 text-gray-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-gray-900 mb-1">
                                 {complaint.title}
@@ -241,15 +291,26 @@ const UserDashboard = () => {
                             </div>
                           </div>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/user/complaint/${complaint._id}`);
-                          }}
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100 flex-shrink-0">
-                          <FiEye className="w-4 h-4" />
-                          <span className="hidden sm:inline">View</span>
-                        </button>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 flex-shrink-0">
+                          <button
+                            onClick={() => openModal('view', complaint)}
+                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
+                            title="View Details">
+                            <FiEye className="w-4 h-4" />
+                            <span className="hidden sm:inline">View</span>
+                          </button>
+                          {canEdit(complaint) && (
+                            <button
+                              onClick={() => openModal('edit', complaint)}
+                              className="flex items-center gap-1.5 px-3 py-2 text-sm text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors border border-emerald-100"
+                              title="Edit Complaint">
+                              <FiEdit2 className="w-4 h-4" />
+                              <span className="hidden sm:inline">Edit</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))
@@ -407,6 +468,14 @@ const UserDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Complaint Modal */}
+      <ComplaintModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        mode={modalState.mode}
+        complaintData={modalState.complaint}
+      />
     </div>
   );
 };

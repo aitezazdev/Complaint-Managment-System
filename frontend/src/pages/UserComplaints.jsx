@@ -16,14 +16,16 @@ import {
   FiSearch,
 } from "react-icons/fi";
 import { toast } from "react-hot-toast";
-import { PageLoader, InlineLoader } from "../utils/Loading";
+import { PageLoader } from "../utils/Loading";
+import ComplaintModal from "../components/ComplaintModal.jsx";
+import ConfirmDialog from "../components/ConfirmDialog.jsx";
 
 const UserComplaints = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { userComplaints, userComplaintsLoaded, loading, error } = useSelector(
+  const { userComplaints, userComplaintsLoaded, error } = useSelector(
     (state) => state.complaint,
   );
 
@@ -35,10 +37,22 @@ const UserComplaints = () => {
     search: "",
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [deleteModal, setDeleteModal] = useState({
+  
+  // Modal state
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: 'create', // 'create', 'view', 'edit'
+    complaint: null,
+  });
+
+  // Delete confirmation state
+  const [deleteConfirmState, setDeleteConfirmState] = useState({
     isOpen: false,
     complaintId: null,
+    complaintTitle: '',
   });
+
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     dispatch(fetchUserComplaints());
@@ -77,13 +91,41 @@ const UserComplaints = () => {
     setFilteredComplaints(filtered);
   }, [userComplaints, filters]);
 
-  const handleDelete = async (id) => {
+  const openModal = (mode, complaint = null) => {
+    setModalState({
+      isOpen: true,
+      mode,
+      complaint,
+    });
+  };
+
+  const closeModal = () => {
+    setModalState({
+      isOpen: false,
+      mode: 'create',
+      complaint: null,
+    });
+  };
+  const handleDeleteClick = (complaint) => {
+    setDeleteConfirmState({
+      isOpen: true,
+      complaintId: complaint._id,
+      complaintTitle: complaint.title,
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmState.complaintId) return;
+    
+    setDeletingId(deleteConfirmState.complaintId);
     try {
-      await dispatch(deleteComplaintAsync(id)).unwrap();
-      toast.success("Complaint deleted successfully");
-      setDeleteModal({ isOpen: false, complaintId: null });
+      await dispatch(deleteComplaintAsync(deleteConfirmState.complaintId)).unwrap();
+      toast.success('Complaint deleted successfully!');
+      setDeleteConfirmState({ isOpen: false, complaintId: null, complaintTitle: '' });
     } catch (error) {
-      toast.error(error || "Failed to delete complaint");
+      toast.error(error || 'Failed to delete complaint');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -131,10 +173,6 @@ const UserComplaints = () => {
     return complaint.status === "Pending";
   };
 
-  const canDelete = (complaint) => {
-    return complaint.status === "Pending";
-  };
-
   const resetFilters = () => {
     setFilters({
       status: "",
@@ -149,7 +187,7 @@ const UserComplaints = () => {
     filters.status || filters.category || filters.priority || filters.search;
 
   if (!userComplaintsLoaded) {
-    return <PageLoader message="Loading dashboard..." />;
+    return <PageLoader message="Loading complaints..." />;
   }
 
   return (
@@ -167,7 +205,7 @@ const UserComplaints = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate("/user/new-complaint")}
+              onClick={() => openModal('create')}
               className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
               <FiPlus className="w-4 h-4" />
               New Complaint
@@ -256,14 +294,10 @@ const UserComplaints = () => {
                       <option value="Sanitation">Sanitation</option>
                       <option value="Water Supply">Water Supply</option>
                       <option value="Electricity">Electricity</option>
-                      <option value="Roads">Roads</option>
-                      <option value="Public Safety">Public Safety</option>
-                      <option value="Noise Pollution">Noise Pollution</option>
-                      <option value="Garbage Collection">
-                        Garbage Collection
-                      </option>
-                      <option value="Street Lighting">Street Lighting</option>
-                      <option value="Other">Other</option>
+                      <option value="Road">Road</option>
+                      <option value="Street Light">Street Light</option>
+                      <option value="Garbage">Garbage</option>
+                      <option value="Others">Others</option>
                     </select>
                   </div>
 
@@ -327,7 +361,7 @@ const UserComplaints = () => {
               </p>
               {userComplaints.length === 0 ? (
                 <button
-                  onClick={() => navigate("/user/new-complaint")}
+                  onClick={() => openModal('create')}
                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
                   <FiPlus className="w-4 h-4" />
                   Submit Your First Complaint
@@ -351,12 +385,36 @@ const UserComplaints = () => {
                     {/* Left Section */}
                     <div className="flex-1">
                       <div className="flex items-start gap-4">
-                        {complaint.images && complaint.images.length > 0 && (
-                          <img
-                            src={complaint.images[0].url}
-                            alt={complaint.title}
-                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0 border border-gray-200"
-                          />
+                        {/* Image or Placeholder */}
+                        {complaint.images && complaint.images.length > 0 ? (
+                          <div className="relative flex-shrink-0">
+                            <img
+                              src={complaint.images[0].url}
+                              alt={complaint.title}
+                              className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                            />
+                            {complaint.images.length > 1 && (
+                              <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+                                +{complaint.images.length - 1}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="w-20 h-20 flex-shrink-0 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-8 h-8 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </div>
                         )}
                         <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-medium text-gray-900 mb-1.5">
@@ -413,9 +471,7 @@ const UserComplaints = () => {
                     {/* Right Section - Actions */}
                     <div className="flex lg:flex-col gap-2">
                       <button
-                        onClick={() =>
-                          navigate(`/user/complaint/${complaint._id}`)
-                        }
+                        onClick={() => openModal('view', complaint)}
                         className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
                         title="View Details">
                         <FiEye className="w-4 h-4" />
@@ -423,23 +479,16 @@ const UserComplaints = () => {
                       </button>
                       {canEdit(complaint) && (
                         <button
-                          onClick={() =>
-                            navigate(`/user/complaint/edit/${complaint._id}`)
-                          }
+                          onClick={() => openModal('edit', complaint)}
                           className="flex items-center gap-1.5 px-3 py-2 text-sm text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors border border-emerald-100"
                           title="Edit Complaint">
                           <FiEdit2 className="w-4 h-4" />
                           <span className="hidden sm:inline">Edit</span>
                         </button>
                       )}
-                      {canDelete(complaint) && (
+                      {canEdit(complaint) && (
                         <button
-                          onClick={() =>
-                            setDeleteModal({
-                              isOpen: true,
-                              complaintId: complaint._id,
-                            })
-                          }
+                          onClick={() => handleDeleteClick(complaint)}
                           className="flex items-center gap-1.5 px-3 py-2 text-sm text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors border border-rose-100"
                           title="Delete Complaint">
                           <FiTrash2 className="w-4 h-4" />
@@ -455,35 +504,26 @@ const UserComplaints = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {deleteModal.isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Delete Complaint
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              Are you sure you want to delete this complaint? This action cannot
-              be undone.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={() =>
-                  setDeleteModal({ isOpen: false, complaintId: null })
-                }
-                className="px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteModal.complaintId)}
-                disabled={loading}
-                className="px-4 py-2 text-sm text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                {loading ? <InlineLoader text="Deleting..." /> : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Complaint Modal */}
+      <ComplaintModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        mode={modalState.mode}
+        complaintData={modalState.complaint}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirmState.isOpen}
+        onClose={() => setDeleteConfirmState({ isOpen: false, complaintId: null, complaintTitle: '' })}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Complaint"
+        message={`Are you sure you want to delete "${deleteConfirmState.complaintTitle}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+        loading={deletingId === deleteConfirmState.complaintId}
+      />
     </div>
   );
 };

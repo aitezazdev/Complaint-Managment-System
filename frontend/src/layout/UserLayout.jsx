@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/slice/auth.js';
-import CreateComplaintModal from '../components/CreateComplaintModal.jsx';
+import ComplaintModal from '../components/ComplaintModal.jsx';
 
 const UserLayout = () => {
   const dispatch = useDispatch();
@@ -84,7 +84,7 @@ const UserLayout = () => {
       </main>
 
       {/* Create Complaint Modal */}
-      <CreateComplaintModal isOpen={isModalOpen} onClose={handleCloseModal} />
+      <ComplaintModal isOpen={isModalOpen} onClose={handleCloseModal} mode="create" />
     </div>
   );
 };
