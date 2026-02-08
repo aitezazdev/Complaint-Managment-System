@@ -1,7 +1,6 @@
-import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
+import User from "../models/userModel.js";
 
-// Register a new user
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -34,30 +33,75 @@ export const registerUser = async (req, res) => {
   }
 };
 
-
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ message: "Please provide email and password" });
-    }
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Please provide email and password" });
+  }
 
-    try {
-        const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-        if (user && (await user.matchPassword(password))) {
-            res.json({
-                user: {
-                    _id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role,
-                },
-                token: generateToken(user._id),
-            });
-        } else {
-            res.status(401).json({ message: "Invalid email or password" });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    if (user && (await user.matchPassword(password))) {
+      res.json({
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(401).json({ message: "Invalid email or password" });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select("-password");
+    res.json({
+      success: true,
+      data: users,
+      count: users.length
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (user) {
+      res.json({
+        success: true,
+        data: user
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      await User.findByIdAndDelete(req.params.id);
+      res.json({ 
+        success: true,
+        message: "User removed" 
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

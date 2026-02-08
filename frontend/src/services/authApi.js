@@ -19,3 +19,30 @@ export const register = async (data) => {
     throw error;
     }
 }
+
+export const getAllUsers = async () => {
+    try {
+        const response = await api.get("/auth/getAllUsers");
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const deleteUser = async (id) => {
+    try {
+        const response = await api.delete(`/auth/delete/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getUserById = async (id) => {
+    try {
+        const response = await api.get(`/auth/getUser/${id}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

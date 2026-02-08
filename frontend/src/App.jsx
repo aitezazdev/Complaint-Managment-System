@@ -7,6 +7,8 @@ import UserLayout from "./layout/UserLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard";
 import UserComplaints from "./pages/UserComplaints";
+import AdminComplaints from "./pages/AdminComplaints";
+import AllUsers from "./pages/AllUsers";
 import { Toaster } from "react-hot-toast";
 import PageLoader from "./utils/Loading";
 
@@ -89,8 +91,8 @@ function App() {
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<div>Admin Users Page</div>} />
-          <Route path="complaints" element={<div>Admin Complaints Page</div>} />
+          <Route path="users" element={<AllUsers />} />
+          <Route path="complaints" element={<AdminComplaints />} />
           <Route path="settings" element={<div>Admin Settings Page</div>} />
         </Route>
         <Route

@@ -34,7 +34,6 @@ const UserDashboard = () => {
     dispatch(fetchUserComplaints());
   }, [dispatch]);
 
-  // Calculate statistics
   const stats = {
     total: userComplaints.length,
     pending: userComplaints.filter((c) => c.status === "Pending").length,
@@ -43,7 +42,6 @@ const UserDashboard = () => {
     rejected: userComplaints.filter((c) => c.status === "Rejected").length,
   };
 
-  // Get recent complaints (last 5)
   const recentComplaints = [...userComplaints]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 5);
@@ -98,7 +96,6 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-5 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -119,9 +116,7 @@ const UserDashboard = () => {
         </div>
 
         <div className="px-6 pb-6">
-          {/* Stats Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            {/* Total */}
             <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-gray-50 rounded-lg">
@@ -134,7 +129,6 @@ const UserDashboard = () => {
               <p className="text-xs text-gray-600">Total Complaints</p>
             </div>
 
-            {/* Pending */}
             <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-amber-50 rounded-lg">
@@ -147,7 +141,6 @@ const UserDashboard = () => {
               <p className="text-xs text-gray-600">Pending</p>
             </div>
 
-            {/* In Progress */}
             <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-blue-50 rounded-lg">
@@ -160,7 +153,6 @@ const UserDashboard = () => {
               <p className="text-xs text-gray-600">In Progress</p>
             </div>
 
-            {/* Resolved */}
             <div className="bg-white rounded-lg border border-gray-200 p-5 hover:shadow-sm transition-shadow">
               <div className="flex items-center justify-between mb-3">
                 <div className="p-2 bg-emerald-50 rounded-lg">

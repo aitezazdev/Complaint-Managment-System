@@ -3,6 +3,8 @@ import { configDotenv } from "dotenv";
 import express from "express";
 import authRoutes from "./routes/authRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+
 import cors from "cors";
 
 const app = express();
@@ -18,6 +20,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 })
 
+app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/complaint", complaintRoutes);
 
