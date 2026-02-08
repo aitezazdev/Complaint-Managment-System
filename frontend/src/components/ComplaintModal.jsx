@@ -3,8 +3,17 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { createComplaintAsync, updateComplaintAsync, deleteComplaintAsync } from '../store/slice/complaint';
 import toast from 'react-hot-toast';
-import { X, Upload, Trash2, Edit2, FileText, AlertCircle } from 'lucide-react';
 import ConfirmDialog from './ConfirmDialog.jsx';
+import { 
+  X, 
+  Upload, 
+  Image as ImageIcon, 
+  MapPin, 
+  Calendar,
+  AlertCircle,
+  Pencil,
+  Trash2 
+} from 'lucide-react';
 
 const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null }) => {
   const dispatch = useDispatch();
@@ -36,7 +45,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
 
   const priorities = ['Low', 'Medium', 'High', 'Critical'];
 
-  // Initialize form data when modal opens or mode changes
   useEffect(() => {
     if (isOpen) {
       setCurrentMode(mode);
@@ -194,7 +202,7 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
       case 'Rejected':
         return 'bg-rose-50 text-rose-700 border-rose-200';
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+        return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
 
@@ -209,7 +217,7 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
       case 'Low':
         return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
+        return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
 
@@ -220,19 +228,19 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-        <div className="bg-white rounded-lg shadow-2xl w-full max-w-3xl my-8 overflow-hidden animate-fadeIn">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl my-8 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-700">
-            <h2 className="text-2xl font-bold text-white">
-              {isViewMode ? 'View Complaint' : isEditMode ? 'Edit Complaint' : 'Create New Complaint'}
+          <div className="flex items-center justify-between p-6 border-b border-slate-200">
+            <h2 className="text-xl font-semibold text-slate-900">
+              {isViewMode ? 'Complaint Details' : isEditMode ? 'Edit Complaint' : 'New Complaint'}
             </h2>
             <button
               onClick={handleClose}
-              className="text-white hover:bg-blue-800 rounded-full p-2 transition-colors"
+              className="text-slate-400 hover:text-slate-600 rounded-lg p-1 transition-colors"
               disabled={loading}
             >
-              <X size={24} />
+              <X className="w-6 h-6" />
             </button>
           </div>
 
@@ -241,89 +249,95 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
             {isViewMode ? (
               // View Mode
               <div className="p-6 space-y-6">
-                {/* Status and Priority Badges */}
+                {/* Status Badges */}
                 <div className="flex flex-wrap gap-2">
-                  <span className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${getStatusColor(complaintData?.status)}`}>
+                  <span className={`px-3 py-1 rounded-md text-sm font-medium border ${getStatusColor(complaintData?.status)}`}>
                     {complaintData?.status}
                   </span>
-                  <span className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${getPriorityColor(complaintData?.priority)}`}>
-                    {complaintData?.priority} Priority
+                  <span className={`px-3 py-1 rounded-md text-sm font-medium border ${getPriorityColor(complaintData?.priority)}`}>
+                    {complaintData?.priority}
                   </span>
-                  <span className="px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200">
+                  <span className="px-3 py-1 rounded-md text-sm font-medium bg-slate-50 text-slate-700 border border-slate-200">
                     {complaintData?.category}
                   </span>
                 </div>
 
                 {/* Title */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Title</h3>
-                  <p className="text-lg font-medium text-gray-900">{complaintData?.title}</p>
+                  <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Title</h3>
+                  <p className="text-base font-medium text-slate-900">{complaintData?.title}</p>
                 </div>
 
                 {/* Description */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Description</h3>
-                  <p className="text-gray-700 whitespace-pre-wrap">{complaintData?.description}</p>
+                  <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Description</h3>
+                  <p className="text-sm text-slate-700 whitespace-pre-wrap">{complaintData?.description}</p>
                 </div>
 
                 {/* Address */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">Address</h3>
-                  <p className="text-gray-700">📍 {complaintData?.address}</p>
+                  <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Location</h3>
+                  <p className="text-sm text-slate-700">{complaintData?.address}</p>
                 </div>
 
                 {/* Images */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">
-                    Images {existingImages.length > 0 && `(${existingImages.length})`}
+                  <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+                    Attachments {existingImages.length > 0 && `(${existingImages.length})`}
                   </h3>
                   {existingImages.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {existingImages.map((image, index) => (
                         <img
                           key={index}
                           src={image.url}
-                          alt={`Complaint image ${index + 1}`}
-                          className="w-full h-40 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-blue-500 transition-colors"
+                          alt={`Attachment ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
                           onClick={() => window.open(image.url, '_blank')}
                         />
                       ))}
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center p-8 bg-gray-50 border-2 border-dashed border-gray-200 rounded-lg">
-                      <FileText className="w-12 h-12 text-gray-300 mb-2" />
-                      <p className="text-sm text-gray-500">No images attached</p>
+                    <div className="flex flex-col items-center justify-center p-8 bg-slate-50 border border-slate-200 rounded-lg">
+                      <ImageIcon className="w-10 h-10 text-slate-300 mb-2" />
+                      <p className="text-sm text-slate-500">No images attached</p>
                     </div>
                   )}
                 </div>
 
                 {/* Admin Notes */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Admin Notes</h3>
+                  <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">Admin Notes</h3>
                   {complaintData?.adminNotes && complaintData.adminNotes.trim() !== '' ? (
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-sm text-blue-700">{complaintData.adminNotes}</p>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                      <p className="text-sm text-gray-500">No notes from admin yet</p>
+                    <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                      <AlertCircle className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                      <p className="text-sm text-slate-500">No notes from admin yet</p>
                     </div>
                   )}
                 </div>
 
                 {/* Dates */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
                   <div>
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase mb-1">Created At</h3>
-                    <p className="text-sm text-gray-700">
+                    <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5" />
+                      Submitted
+                    </h3>
+                    <p className="text-sm text-slate-700">
                       {new Date(complaintData?.createdAt).toLocaleString()}
                     </p>
                   </div>
                   {complaintData?.resolvedAt && (
                     <div>
-                      <h3 className="text-xs font-semibold text-gray-500 uppercase mb-1">Resolved At</h3>
-                      <p className="text-sm text-gray-700">
+                      <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" />
+                        Resolved
+                      </h3>
+                      <p className="text-sm text-slate-700">
                         {new Date(complaintData.resolvedAt).toLocaleString()}
                       </p>
                     </div>
@@ -333,18 +347,18 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
             ) : (
               // Edit/Create Mode - Form
               <form onSubmit={handleSubmit}>
-                <div className="p-6 space-y-6">
+                <div className="p-6 space-y-5">
                   {/* Title */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Title <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Title <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition text-sm"
                       placeholder="Enter complaint title"
                       required
                     />
@@ -353,14 +367,14 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                   {/* Category and Priority */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Category <span className="text-red-500">*</span>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Category <span className="text-rose-500">*</span>
                       </label>
                       <select
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                        className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition text-sm"
                         required
                       >
                         <option value="">Select category</option>
@@ -373,14 +387,14 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
                         Priority
                       </label>
                       <select
                         name="priority"
                         value={formData.priority}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                        className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition text-sm"
                       >
                         {priorities.map((priority) => (
                           <option key={priority} value={priority}>
@@ -393,15 +407,15 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
 
                   {/* Address */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Address <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Location <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition text-sm"
                       placeholder="Enter location address"
                       required
                     />
@@ -409,15 +423,15 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
 
                   {/* Description */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Description <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Description <span className="text-rose-500">*</span>
                     </label>
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleInputChange}
                       rows="5"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"
+                      className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition resize-none text-sm"
                       placeholder="Describe your complaint in detail..."
                       required
                     />
@@ -426,23 +440,23 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                   {/* Existing Images (Edit Mode) */}
                   {isEditMode && existingImages.length > 0 && (
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
                         Current Images
                       </label>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {existingImages.map((image, index) => (
                           <div key={index} className="relative group">
                             <img
                               src={image.url}
                               alt={`Existing ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
+                              className="w-full h-24 object-cover rounded-lg border border-slate-200"
                             />
                             <button
                               type="button"
                               onClick={() => removeExistingImage(index)}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <X size={16} />
+                              <X className="w-4 h-4" />
                             </button>
                           </div>
                         ))}
@@ -452,10 +466,10 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
 
                   {/* Image Upload */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      {isEditMode ? 'Add New Images (Max 5 total)' : 'Upload Images (Max 5)'}
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      {isEditMode ? 'Add Images (Max 5 total)' : 'Upload Images (Max 5)'}
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-slate-400 transition-colors">
                       <input
                         type="file"
                         id="image-upload"
@@ -469,11 +483,11 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                         htmlFor="image-upload"
                         className={`cursor-pointer ${existingImages.length + images.length >= 5 ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">
+                        <Upload className="mx-auto h-10 w-10 text-slate-400 mb-2" />
+                        <p className="text-sm text-slate-600">
                           Click to upload or drag and drop
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-slate-500 mt-1">
                           PNG, JPG, GIF up to 10MB
                         </p>
                       </label>
@@ -481,20 +495,20 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
 
                     {/* New Image Previews */}
                     {imagePreviews.length > 0 && (
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-3">
                         {imagePreviews.map((preview, index) => (
                           <div key={index} className="relative group">
                             <img
                               src={preview}
                               alt={`Preview ${index + 1}`}
-                              className="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
+                              className="w-full h-24 object-cover rounded-lg border border-slate-200"
                             />
                             <button
                               type="button"
                               onClick={() => removeNewImage(index)}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <X size={16} />
+                              <X className="w-4 h-4" />
                             </button>
                           </div>
                         ))}
@@ -504,25 +518,25 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                 </div>
 
                 {/* Form Footer */}
-                <div className="flex items-center justify-end gap-4 p-6 border-t border-gray-200 bg-gray-50">
+                <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200 bg-slate-50">
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                    className="px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 transition-colors font-medium text-sm"
                     disabled={loading}
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                     disabled={loading}
                   >
                     {loading ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         {isEditMode ? 'Updating...' : 'Creating...'}
-                      </>
+                      </span>
                     ) : (
                       <>{isEditMode ? 'Update Complaint' : 'Create Complaint'}</>
                     )}
@@ -532,12 +546,12 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
             )}
           </div>
 
-          {/* View Mode Footer with Actions */}
+          {/* View Mode Footer */}
           {isViewMode && (
-            <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-slate-50">
               <button
                 onClick={handleClose}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+                className="px-4 py-2.5 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 transition-colors font-medium text-sm"
               >
                 Close
               </button>
@@ -545,19 +559,19 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                 {canDelete() && (
                   <button
                     onClick={() => setDeleteConfirmOpen(true)}
-                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors font-medium text-sm"
                     disabled={loading}
                   >
-                    <Trash2 size={18} />
+                    <Trash2 className="w-4 h-4" />
                     Delete
                   </button>
                 )}
                 {canEdit() && (
                   <button
                     onClick={switchToEditMode}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium text-sm"
                   >
-                    <Edit2 size={18} />
+                    <Pencil className="w-4 h-4" />
                     Edit
                   </button>
                 )}
@@ -567,7 +581,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

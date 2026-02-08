@@ -26,6 +26,8 @@ export const registerUser = async (req, res) => {
           role: user.role,
         },
         token: generateToken(user._id),
+        success: true,
+        message: "User registered successfully"
       });
     }
   } catch (error) {

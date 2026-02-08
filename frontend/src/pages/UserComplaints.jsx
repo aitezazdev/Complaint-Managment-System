@@ -6,19 +6,22 @@ import {
   deleteComplaintAsync,
   clearError,
 } from "../store/slice/complaint";
-import {
-  FiEye,
-  FiEdit2,
-  FiTrash2,
-  FiPlus,
-  FiFilter,
-  FiX,
-  FiSearch,
-} from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { PageLoader } from "../utils/Loading";
 import ComplaintModal from "../components/ComplaintModal.jsx";
 import ConfirmDialog from "../components/ConfirmDialog.jsx";
+import { 
+  Search, 
+  X, 
+  Filter, 
+  MapPin, 
+  Calendar, 
+  Image as ImageIcon,
+  Eye,
+  Pencil,
+  Trash2,
+  FileText
+} from "lucide-react";
 
 const UserComplaints = () => {
   const dispatch = useDispatch();
@@ -38,14 +41,12 @@ const UserComplaints = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
   
-  // Modal state
   const [modalState, setModalState] = useState({
     isOpen: false,
-    mode: 'create', // 'create', 'view', 'edit'
+    mode: 'create',
     complaint: null,
   });
 
-  // Delete confirmation state
   const [deleteConfirmState, setDeleteConfirmState] = useState({
     isOpen: false,
     complaintId: null,
@@ -65,7 +66,6 @@ const UserComplaints = () => {
     }
   }, [error, dispatch]);
 
-  // Filter complaints based on all criteria
   useEffect(() => {
     let filtered = [...userComplaints];
 
@@ -106,6 +106,7 @@ const UserComplaints = () => {
       complaint: null,
     });
   };
+
   const handleDeleteClick = (complaint) => {
     setDeleteConfirmState({
       isOpen: true,
@@ -140,7 +141,7 @@ const UserComplaints = () => {
       case "Rejected":
         return "bg-rose-50 text-rose-700 border-rose-200";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
+        return "bg-slate-50 text-slate-700 border-slate-200";
     }
   };
 
@@ -155,7 +156,7 @@ const UserComplaints = () => {
       case "Low":
         return "bg-emerald-50 text-emerald-700 border-emerald-200";
       default:
-        return "bg-gray-50 text-gray-700 border-gray-200";
+        return "bg-slate-50 text-slate-700 border-slate-200";
     }
   };
 
@@ -191,33 +192,32 @@ const UserComplaints = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-5 mb-6">
+        <div className="bg-white border-b border-slate-200 px-6 py-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
+              <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
                 My Complaints
               </h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-slate-600 mt-1">
                 Manage and track all your submitted complaints
               </p>
             </div>
             <button
               onClick={() => openModal('create')}
-              className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
-              <FiPlus className="w-4 h-4" />
-              New Complaint
+              className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
+              Submit Complaint
             </button>
           </div>
         </div>
 
         <div className="px-6">
           {/* Search Bar */}
-          <div className="bg-white rounded-lg border border-gray-200 mb-4 p-4">
+          <div className="bg-white rounded-lg border border-slate-200 mb-4 p-4">
             <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search by title, description, or address..."
@@ -225,44 +225,44 @@ const UserComplaints = () => {
                 onChange={(e) =>
                   setFilters({ ...filters, search: e.target.value })
                 }
-                className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-sm"
               />
               {filters.search && (
                 <button
                   onClick={() => setFilters({ ...filters, search: "" })}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  <FiX className="w-5 h-5" />
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
                 </button>
               )}
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white rounded-lg border border-gray-200 mb-6">
+          <div className="bg-white rounded-lg border border-slate-200 mb-6">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors">
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors">
               <div className="flex items-center gap-2">
-                <FiFilter className="w-5 h-5 text-gray-600" />
-                <span className="font-medium text-gray-900 text-sm">
+                <Filter className="w-4 h-4 text-slate-600" />
+                <span className="font-medium text-slate-900 text-sm">
                   Filters
                 </span>
                 {hasActiveFilters && (
-                  <span className="bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                  <span className="bg-slate-900 text-white text-xs font-medium px-2 py-0.5 rounded-full">
                     Active
                   </span>
                 )}
               </div>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-slate-500">
                 {showFilters ? "Hide" : "Show"}
               </span>
             </button>
 
             {showFilters && (
-              <div className="p-4 border-t border-gray-200">
+              <div className="p-4 border-t border-slate-200">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wider">
                       Status
                     </label>
                     <select
@@ -270,7 +270,7 @@ const UserComplaints = () => {
                       onChange={(e) =>
                         setFilters({ ...filters, status: e.target.value })
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
                       <option value="">All Status</option>
                       <option value="Pending">Pending</option>
                       <option value="In Progress">In Progress</option>
@@ -280,7 +280,7 @@ const UserComplaints = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wider">
                       Category
                     </label>
                     <select
@@ -288,7 +288,7 @@ const UserComplaints = () => {
                       onChange={(e) =>
                         setFilters({ ...filters, category: e.target.value })
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
                       <option value="">All Categories</option>
                       <option value="Infrastructure">Infrastructure</option>
                       <option value="Sanitation">Sanitation</option>
@@ -302,7 +302,7 @@ const UserComplaints = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wider">
                       Priority
                     </label>
                     <select
@@ -310,7 +310,7 @@ const UserComplaints = () => {
                       onChange={(e) =>
                         setFilters({ ...filters, priority: e.target.value })
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
                       <option value="">All Priorities</option>
                       <option value="Low">Low</option>
                       <option value="Medium">Medium</option>
@@ -323,8 +323,7 @@ const UserComplaints = () => {
                 {hasActiveFilters && (
                   <button
                     onClick={resetFilters}
-                    className="mt-4 flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium">
-                    <FiX className="w-4 h-4" />
+                    className="mt-4 text-sm text-slate-900 hover:text-slate-700 font-medium">
                     Clear All Filters
                   </button>
                 )}
@@ -334,13 +333,13 @@ const UserComplaints = () => {
 
           {/* Results Summary */}
           {hasActiveFilters && (
-            <div className="mb-4 text-sm text-gray-600">
+            <div className="mb-4 text-sm text-slate-600">
               Showing{" "}
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-slate-900">
                 {filteredComplaints.length}
               </span>{" "}
               of{" "}
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-slate-900">
                 {userComplaints.length}
               </span>{" "}
               complaints
@@ -349,12 +348,14 @@ const UserComplaints = () => {
 
           {/* Complaints List */}
           {filteredComplaints.length === 0 ? (
-            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-              <div className="text-gray-300 text-5xl mb-4">📋</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
+              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="w-8 h-8 text-slate-400" />
+              </div>
+              <h3 className="text-base font-medium text-slate-900 mb-2">
                 No complaints found
               </h3>
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-slate-600 mb-6 max-w-sm mx-auto">
                 {userComplaints.length === 0
                   ? "You haven't submitted any complaints yet."
                   : "No complaints match your current filters."}
@@ -362,15 +363,13 @@ const UserComplaints = () => {
               {userComplaints.length === 0 ? (
                 <button
                   onClick={() => openModal('create')}
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
-                  <FiPlus className="w-4 h-4" />
+                  className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
                   Submit Your First Complaint
                 </button>
               ) : (
                 <button
                   onClick={resetFilters}
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                  <FiX className="w-4 h-4" />
+                  className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
                   Clear Filters
                 </button>
               )}
@@ -380,79 +379,61 @@ const UserComplaints = () => {
               {filteredComplaints.map((complaint) => (
                 <div
                   key={complaint._id}
-                  className="bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all p-5">
+                  className="bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-all p-5">
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                    {/* Left Section */}
                     <div className="flex-1">
                       <div className="flex items-start gap-4">
-                        {/* Image or Placeholder */}
                         {complaint.images && complaint.images.length > 0 ? (
                           <div className="relative flex-shrink-0">
                             <img
                               src={complaint.images[0].url}
                               alt={complaint.title}
-                              className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                              className="w-20 h-20 object-cover rounded-lg border border-slate-200"
                             />
                             {complaint.images.length > 1 && (
-                              <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
+                              <div className="absolute -bottom-1 -right-1 bg-slate-900 text-white text-xs font-medium rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
                                 +{complaint.images.length - 1}
                               </div>
                             )}
                           </div>
                         ) : (
-                          <div className="w-20 h-20 flex-shrink-0 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                            <svg
-                              className="w-8 h-8 text-gray-400"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
+                          <div className="w-20 h-20 flex-shrink-0 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center">
+                            <ImageIcon className="w-8 h-8 text-slate-400" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-medium text-gray-900 mb-1.5">
+                          <h3 className="text-base font-medium text-slate-900 mb-1.5">
                             {complaint.title}
                           </h3>
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                          <p className="text-sm text-slate-600 mb-3 line-clamp-2">
                             {complaint.description}
                           </p>
                           <div className="flex flex-wrap gap-2 mb-3">
-                            <span
-                              className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getStatusColor(
-                                complaint.status,
-                              )}`}>
+                            <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getStatusColor(complaint.status)}`}>
                               {complaint.status}
                             </span>
-                            <span
-                              className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getPriorityColor(
-                                complaint.priority,
-                              )}`}>
+                            <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getPriorityColor(complaint.priority)}`}>
                               {complaint.priority}
                             </span>
-                            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-gray-50 text-gray-700 border border-gray-200">
+                            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
                               {complaint.category}
                             </span>
                           </div>
-                          <div className="flex flex-wrap gap-4 text-xs text-gray-500">
-                            <span className="flex items-center gap-1">
-                              📍 {complaint.address}
+                          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
+                            <span className="flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5" />
+                              {complaint.address}
                             </span>
-                            <span className="flex items-center gap-1">
-                              📅 {formatDate(complaint.createdAt)}
+                            <span className="flex items-center gap-1.5">
+                              <Calendar className="w-3.5 h-3.5" />
+                              {formatDate(complaint.createdAt)}
                             </span>
-                            {complaint.images &&
-                              complaint.images.length > 0 && (
-                                <span className="flex items-center gap-1">
-                                  🖼️ {complaint.images.length} image(s)
-                                </span>
-                              )}
+                            {complaint.images && complaint.images.length > 0 && (
+                              <span className="flex items-center gap-1.5">
+                                <ImageIcon className="w-3.5 h-3.5" />
+                                {complaint.images.length} image(s)
+                              </span>
+                            )}
                           </div>
                           {complaint.adminNotes && (
                             <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -468,32 +449,31 @@ const UserComplaints = () => {
                       </div>
                     </div>
 
-                    {/* Right Section - Actions */}
                     <div className="flex lg:flex-col gap-2">
                       <button
                         onClick={() => openModal('view', complaint)}
-                        className="flex items-center gap-1.5 px-3 py-2 text-sm text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-100"
+                        className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200 font-medium"
                         title="View Details">
-                        <FiEye className="w-4 h-4" />
+                        <Eye className="w-4 h-4" />
                         <span className="hidden sm:inline">View</span>
                       </button>
                       {canEdit(complaint) && (
-                        <button
-                          onClick={() => openModal('edit', complaint)}
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors border border-emerald-100"
-                          title="Edit Complaint">
-                          <FiEdit2 className="w-4 h-4" />
-                          <span className="hidden sm:inline">Edit</span>
-                        </button>
-                      )}
-                      {canEdit(complaint) && (
-                        <button
-                          onClick={() => handleDeleteClick(complaint)}
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors border border-rose-100"
-                          title="Delete Complaint">
-                          <FiTrash2 className="w-4 h-4" />
-                          <span className="hidden sm:inline">Delete</span>
-                        </button>
+                        <>
+                          <button
+                            onClick={() => openModal('edit', complaint)}
+                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200 font-medium"
+                            title="Edit Complaint">
+                            <Pencil className="w-4 h-4" />
+                            <span className="hidden sm:inline">Edit</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(complaint)}
+                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-rose-700 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors border border-rose-200 font-medium"
+                            title="Delete Complaint">
+                            <Trash2 className="w-4 h-4" />
+                            <span className="hidden sm:inline">Delete</span>
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -504,7 +484,6 @@ const UserComplaints = () => {
         </div>
       </div>
 
-      {/* Complaint Modal */}
       <ComplaintModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
@@ -512,7 +491,6 @@ const UserComplaints = () => {
         complaintData={modalState.complaint}
       />
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirmState.isOpen}
         onClose={() => setDeleteConfirmState({ isOpen: false, complaintId: null, complaintTitle: '' })}
