@@ -12,28 +12,51 @@ import PageLoader from "./utils/Loading";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
-
+  
   if (loading) {
     return <PageLoader message="Initializing..." />;
   }
-
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
   }
-
+  
   if (requiredRole && user?.role !== requiredRole) {
     return <Navigate to="/" />;
   }
-
+  
   return children;
 };
 
 function App() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-
+  
   return (
     <>
-    <Toaster />
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       <Routes>
         <Route
           path="/login"
@@ -43,7 +66,6 @@ function App() {
           path="/register"
           element={!isAuthenticated ? <Register /> : <Navigate to="/" />}
         />
-
         <Route
           path="/"
           element={
@@ -58,33 +80,31 @@ function App() {
             )
           }
         />
-
         <Route
           path="/admin"
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminLayout />
             </ProtectedRoute>
-          }>
+          }
+        >
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<div>Admin Users Page</div>} />
           <Route path="complaints" element={<div>Admin Complaints Page</div>} />
           <Route path="settings" element={<div>Admin Settings Page</div>} />
         </Route>
-
         <Route
           path="/user"
           element={
             <ProtectedRoute requiredRole="user">
               <UserLayout />
             </ProtectedRoute>
-          }>
+          }
+        >
           <Route path="dashboard" element={<UserDashboard />} />
           <Route path="complaints" element={<UserComplaints />} />
-          <Route path="new-complaint" element={<div>New Complaint Page</div>} />
           <Route path="profile" element={<div>User Profile Page</div>} />
         </Route>
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

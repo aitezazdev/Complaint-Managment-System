@@ -11,16 +11,26 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
-
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    config.data = {
-      ...config.data,
-      appVersion: "1.0.0",
-      platform: "web",
-    };
+    // IMPORTANT: Don't modify data if it's FormData (for file uploads)
+    if (config.data instanceof FormData) {
+      // Remove Content-Type header to let browser set it with boundary
+      delete config.headers["Content-Type"];
+      
+      // Append metadata to FormData instead of replacing config.data
+      config.data.append("appVersion", "1.0.0");
+      config.data.append("platform", "web");
+    } else {
+      // For regular JSON requests
+      config.data = {
+        ...config.data,
+        appVersion: "1.0.0",
+        platform: "web",
+      };
+    }
 
     return config;
   },

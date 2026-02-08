@@ -1,15 +1,25 @@
-// layouts/UserLayout.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logout } from '../store/slice/auth';
+import { logout } from '../store/slice/auth.js';
+import CreateComplaintModal from '../components/CreateComplaintModal.jsx';
+
 const UserLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -19,7 +29,6 @@ const UserLayout = () => {
         <div className="p-4">
           <h2 className="text-2xl font-bold">User Portal</h2>
         </div>
-        
         <nav className="mt-8">
           <NavLink
             to="/user/dashboard"
@@ -31,7 +40,6 @@ const UserLayout = () => {
           >
             Dashboard
           </NavLink>
-          
           <NavLink
             to="/user/complaints"
             className={({ isActive }) =>
@@ -42,18 +50,12 @@ const UserLayout = () => {
           >
             My Complaints
           </NavLink>
-          
-          <NavLink
-            to="/user/new-complaint"
-            className={({ isActive }) =>
-              `block px-4 py-3 hover:bg-blue-700 ${
-                isActive ? 'bg-blue-700 border-l-4 border-white' : ''
-              }`
-            }
+          <button
+            onClick={handleOpenModal}
+            className="w-full text-left block px-4 py-3 hover:bg-blue-700"
           >
             New Complaint
-          </NavLink>
-          
+          </button>
           <NavLink
             to="/user/profile"
             className={({ isActive }) =>
@@ -65,7 +67,6 @@ const UserLayout = () => {
             Profile
           </NavLink>
         </nav>
-
         <div className="absolute bottom-0 w-64 p-4">
           <button
             onClick={handleLogout}
@@ -76,11 +77,14 @@ const UserLayout = () => {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto">
+      <main className={`flex-1 overflow-y-auto ${isModalOpen ? 'blur-sm' : ''}`}>
         <div className="p-8">
           <Outlet />
         </div>
       </main>
+
+      {/* Create Complaint Modal */}
+      <CreateComplaintModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };
