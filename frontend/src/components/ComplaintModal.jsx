@@ -230,7 +230,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
         <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl my-8 overflow-hidden">
-          {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-slate-200">
             <h2 className="text-xl font-semibold text-slate-900">
               {isViewMode ? 'Complaint Details' : isEditMode ? 'Edit Complaint' : 'New Complaint'}
@@ -244,12 +243,9 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
             </button>
           </div>
 
-          {/* Content */}
           <div className="overflow-y-auto max-h-[calc(100vh-250px)]">
             {isViewMode ? (
-              // View Mode
               <div className="p-6 space-y-6">
-                {/* Status Badges */}
                 <div className="flex flex-wrap gap-2">
                   <span className={`px-3 py-1 rounded-md text-sm font-medium border ${getStatusColor(complaintData?.status)}`}>
                     {complaintData?.status}
