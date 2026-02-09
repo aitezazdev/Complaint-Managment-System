@@ -202,7 +202,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-5 mb-6">
@@ -220,7 +220,7 @@ const UserProfile = () => {
                 <>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
+                    className="inline-flex items-center gap-2 bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
                     <FiEdit2 className="w-4 h-4" />
                     Edit Profile
                   </button>
@@ -228,7 +228,7 @@ const UserProfile = () => {
                   <button
                     type="button"
                     onClick={handleDeleteAccount}
-                    className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm">
+                    className="inline-flex items-center gap-2 bg-white text-gray-900 border border-gray-300 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                     <FiLogOut className="w-4 h-4" />
                     Delete Account
                   </button>
@@ -241,17 +241,18 @@ const UserProfile = () => {
         <div className="px-6">
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <form onSubmit={handleSubmit}>
-              <div className="p-6 border-b border-gray-200 bg-linear-to-r from-blue-50 to-indigo-50">
+              {/* Profile Header Section */}
+              <div className="p-6 border-b border-gray-200 bg-gray-50">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="relative">
                     {profilePicturePreview ? (
                       <img
                         src={profilePicturePreview}
                         alt="Profile"
-                        className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-sm"
                       />
                     ) : (
-                      <div className="w-32 h-32 bg-linear-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                      <div className="w-32 h-32 bg-gray-900 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
                         <span className="text-white font-bold text-5xl">
                           {currentUserProfile?.name?.charAt(0).toUpperCase()}
                         </span>
@@ -268,14 +269,14 @@ const UserProfile = () => {
                         />
                         <label
                           htmlFor="profilePicture"
-                          className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors cursor-pointer shadow-lg">
+                          className="absolute bottom-0 right-0 bg-gray-900 text-white p-2 rounded-full hover:bg-gray-800 transition-colors cursor-pointer shadow-sm">
                           <FiCamera className="w-5 h-5" />
                         </label>
                         {profilePicture && (
                           <button
                             type="button"
                             onClick={removeProfilePicture}
-                            className="absolute top-0 right-0 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg">
+                            className="absolute top-0 right-0 bg-white text-gray-900 border border-gray-300 p-2 rounded-full hover:bg-gray-50 transition-colors shadow-sm">
                             <FiX className="w-4 h-4" />
                           </button>
                         )}
@@ -290,7 +291,7 @@ const UserProfile = () => {
                       {currentUserProfile?.email}
                     </p>
                     <div className="mt-3">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700 border border-blue-200">
+                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium bg-gray-900 text-white border border-gray-900">
                         <FiShield className="w-4 h-4" />
                         {currentUserProfile?.role === "admin"
                           ? "Administrator"
@@ -302,9 +303,10 @@ const UserProfile = () => {
               </div>
 
               <div className="p-6 space-y-6">
+                {/* Basic Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <FiUser className="w-5 h-5 text-blue-600" />
+                    <FiUser className="w-5 h-5 text-gray-900" />
                     Basic Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -318,7 +320,7 @@ const UserProfile = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         disabled={!isEditing}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition disabled:bg-gray-50 disabled:text-gray-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition disabled:bg-gray-50 disabled:text-gray-500"
                         required
                       />
                     </div>
@@ -332,51 +334,48 @@ const UserProfile = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         disabled={!isEditing}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition disabled:bg-gray-50 disabled:text-gray-500"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition disabled:bg-gray-50 disabled:text-gray-500"
                         required
                       />
                     </div>
                   </div>
                 </div>
 
+                {/* Complaint Statistics */}
                 {currentUserProfile?.statistics && (
                   <div className="pt-6 border-t border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <FiFileText className="w-5 h-5 text-blue-600" />
+                      <FiFileText className="w-5 h-5 text-gray-900" />
                       Complaint Statistics
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                      <div className="p-4 bg-white border border-gray-200 rounded-lg">
                         <p className="text-xs text-gray-600 mb-1">Total</p>
                         <p className="text-2xl font-bold text-gray-900">
                           {currentUserProfile.statistics.totalComplaints}
                         </p>
                       </div>
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <p className="text-xs text-amber-700 mb-1">Pending</p>
-                        <p className="text-2xl font-bold text-amber-700">
+                      <div className="p-4 bg-white border border-gray-300 rounded-lg">
+                        <p className="text-xs text-gray-600 mb-1">Pending</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {currentUserProfile.statistics.pending}
                         </p>
                       </div>
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-xs text-blue-700 mb-1">
-                          In Progress
-                        </p>
-                        <p className="text-2xl font-bold text-blue-700">
+                      <div className="p-4 bg-white border border-gray-300 rounded-lg">
+                        <p className="text-xs text-gray-600 mb-1">In Progress</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {currentUserProfile.statistics.inProgress}
                         </p>
                       </div>
-                      <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                        <p className="text-xs text-emerald-700 mb-1">
-                          Resolved
-                        </p>
-                        <p className="text-2xl font-bold text-emerald-700">
+                      <div className="p-4 bg-white border border-gray-300 rounded-lg">
+                        <p className="text-xs text-gray-600 mb-1">Resolved</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {currentUserProfile.statistics.resolved}
                         </p>
                       </div>
-                      <div className="p-4 bg-rose-50 border border-rose-200 rounded-lg">
-                        <p className="text-xs text-rose-700 mb-1">Rejected</p>
-                        <p className="text-2xl font-bold text-rose-700">
+                      <div className="p-4 bg-white border border-gray-300 rounded-lg">
+                        <p className="text-xs text-gray-600 mb-1">Rejected</p>
+                        <p className="text-2xl font-bold text-gray-900">
                           {currentUserProfile.statistics.rejected}
                         </p>
                       </div>
@@ -384,11 +383,12 @@ const UserProfile = () => {
                   </div>
                 )}
 
+                {/* Change Password Section */}
                 {isEditing && (
                   <div className="pt-6 border-t border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        <FiAlertCircle className="w-5 h-5 text-blue-600" />
+                        <FiAlertCircle className="w-5 h-5 text-gray-900" />
                         Change Password
                       </h3>
                       <button
@@ -396,17 +396,16 @@ const UserProfile = () => {
                         onClick={() =>
                           setShowPasswordFields(!showPasswordFields)
                         }
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                        className="text-sm text-gray-900 hover:text-gray-700 font-medium">
                         {showPasswordFields ? "Cancel" : "Change Password"}
                       </button>
                     </div>
 
                     {showPasswordFields && (
                       <div className="space-y-4">
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <p className="text-xs text-blue-700">
-                            Leave password fields empty to keep your current
-                            password
+                        <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                          <p className="text-xs text-gray-600">
+                            Leave password fields empty to keep your current password
                           </p>
                         </div>
                         <div>
@@ -418,7 +417,7 @@ const UserProfile = () => {
                             name="newPassword"
                             value={formData.newPassword}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition"
                             placeholder="Enter new password"
                             minLength={6}
                           />
@@ -432,7 +431,7 @@ const UserProfile = () => {
                             name="confirmPassword"
                             value={formData.confirmPassword}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition"
                             placeholder="Confirm new password"
                             minLength={6}
                           />
@@ -442,6 +441,7 @@ const UserProfile = () => {
                   </div>
                 )}
 
+                {/* Account Information */}
                 <div className="pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Account Information
@@ -475,18 +475,19 @@ const UserProfile = () => {
                 </div>
               </div>
 
+              {/* Action Buttons */}
               {isEditing && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium">
+                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-white transition-colors font-medium">
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                    className="px-6 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

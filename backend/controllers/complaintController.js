@@ -1,5 +1,11 @@
 import { Complaint } from "../models/complaintModel.js";
 import cloudinary from "../config/cloudinary.js";
+import {
+  sendComplaintCreatedEmail,
+  sendComplaintResolvedEmail,
+  sendComplaintRejectedEmail,
+  sendComplaintInProgressEmail,
+} from "../utils/emailUtils.js";
 
 const deleteFromCloudinary = async (publicId) => {
   try {
@@ -71,6 +77,24 @@ export const createComplaint = async (req, res) => {
 
     await newComplaint.populate("userId", "name email");
 
+    // Send email notification to user
+    try {
+      await sendComplaintCreatedEmail(
+        req.user.email,
+        req.user.name,
+        {
+          title: newComplaint.title,
+          category: newComplaint.category,
+          priority: newComplaint.priority,
+          status: newComplaint.status,
+          address: newComplaint.address,
+        }
+      );
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError.message);
+      // Don't fail the request if email fails
+    }
+
     res.status(201).json({
       success: true,
       message: "Complaint created successfully",
@@ -91,7 +115,7 @@ export const updateComplaint = async (req, res) => {
     const userId = req.user._id;
     const userRole = req.user.role;
 
-    const complaint = await Complaint.findById(id);
+    const complaint = await Complaint.findById(id).populate("userId", "name email");
 
     if (!complaint) {
       return res.status(404).json({
@@ -100,7 +124,7 @@ export const updateComplaint = async (req, res) => {
       });
     }
 
-    const isOwner = complaint.userId.toString() === userId.toString();
+    const isOwner = complaint.userId._id.toString() === userId.toString();
     const isAdmin = userRole === "admin";
 
     if (!isOwner && !isAdmin) {
@@ -118,6 +142,7 @@ export const updateComplaint = async (req, res) => {
     }
 
     const updatedData = {};
+    const previousStatus = complaint.status;
 
     if (req.body.title) updatedData.title = req.body.title;
     if (req.body.description) updatedData.description = req.body.description;
@@ -177,6 +202,44 @@ export const updateComplaint = async (req, res) => {
       { $set: updatedData },
       { new: true },
     ).populate("userId", "name email");
+
+    // Send email notification when admin updates status
+    if (isAdmin && req.body.status && req.body.status !== previousStatus) {
+      try {
+        const complaintData = {
+          title: updatedComplaint.title,
+          category: updatedComplaint.category,
+        };
+
+        const adminNotes = updatedComplaint.adminNotes || "";
+
+        if (updatedComplaint.status === "Resolved") {
+          await sendComplaintResolvedEmail(
+            updatedComplaint.userId.email,
+            updatedComplaint.userId.name,
+            complaintData,
+            adminNotes
+          );
+        } else if (updatedComplaint.status === "Rejected") {
+          await sendComplaintRejectedEmail(
+            updatedComplaint.userId.email,
+            updatedComplaint.userId.name,
+            complaintData,
+            adminNotes
+          );
+        } else if (updatedComplaint.status === "In Progress") {
+          await sendComplaintInProgressEmail(
+            updatedComplaint.userId.email,
+            updatedComplaint.userId.name,
+            complaintData,
+            adminNotes
+          );
+        }
+      } catch (emailError) {
+        console.error("Failed to send email:", emailError.message);
+        // Don't fail the request if email fails
+      }
+    }
 
     res.status(200).json({
       success: true,

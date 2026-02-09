@@ -1,5 +1,6 @@
 import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
+import { sendAccountCreatedEmail } from "../utils/SendEmail.js";
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -18,6 +19,10 @@ export const registerUser = async (req, res) => {
     });
 
     if (user) {
+      // send email (non-blocking)
+      sendAccountCreatedEmail(user.email, user.name)
+        .catch(err => console.log("Email error:", err));
+
       res.status(201).json({
         user: {
           _id: user._id,
@@ -30,6 +35,7 @@ export const registerUser = async (req, res) => {
         message: "User registered successfully"
       });
     }
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -95,7 +95,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<AllUsers />} />
           <Route path="complaints" element={<AdminComplaints />} />
-          <Route path="settings" element={<div>Admin Settings Page</div>} />
+          <Route path="settings" element={<UserProfile />} />
         </Route>
 
         {/* User Routes */}
