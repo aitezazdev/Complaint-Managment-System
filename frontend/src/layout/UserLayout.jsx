@@ -11,8 +11,8 @@ const UserLayout = () => {
   const { user } = useSelector((state) => state.auth);
   const { currentUserProfile } = useSelector((state) => state.user);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Fetch user profile when component mounts
   useEffect(() => {
     dispatch(fetchCurrentUserProfile());
   }, [dispatch]);
@@ -30,7 +30,6 @@ const UserLayout = () => {
     setIsModalOpen(false);
   };
 
-  // Get initials for avatar fallback
   const getInitials = (name) => {
     if (!name) return 'U';
     return name
@@ -41,9 +40,7 @@ const UserLayout = () => {
       .slice(0, 2);
   };
 
-  // Get profile picture URL - handle both string and object formats
   const getProfilePictureUrl = () => {
-    // First try to get from currentUserProfile (most up-to-date)
     if (currentUserProfile?.profilePicture) {
       if (typeof currentUserProfile.profilePicture === 'object' && currentUserProfile.profilePicture.url) {
         return currentUserProfile.profilePicture.url;
@@ -53,7 +50,6 @@ const UserLayout = () => {
       }
     }
     
-    // Fallback to auth user
     if (user?.profilePicture) {
       if (typeof user.profilePicture === 'object' && user.profilePicture.url) {
         return user.profilePicture.url;
@@ -66,27 +62,50 @@ const UserLayout = () => {
     return null;
   };
 
-  // Get display name (prefer currentUserProfile, fallback to auth user)
   const displayName = currentUserProfile?.name || user?.name || 'User';
   const displayEmail = currentUserProfile?.email || user?.email || '';
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-72 bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col shadow-xl">
-        {/* User Profile Section */}
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-30
+        w-72 bg-gradient-to-b from-gray-900 to-gray-800 
+        flex flex-col shadow-xl
+        transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
         <div className="px-6 py-6 border-b border-gray-700">
+          <div className="flex items-center justify-between mb-4 lg:hidden">
+            <span className="text-white font-semibold">Menu</span>
+            <button
+              onClick={closeSidebar}
+              className="text-gray-400 hover:text-white"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
           <div className="flex items-center gap-4">
-            {/* Profile Picture */}
             <div className="relative">
               {getProfilePictureUrl() ? (
                 <img
                   src={getProfilePictureUrl()}
                   alt={displayName}
-                  className="w-14 h-14 rounded-full object-cover ring-2 ring-gray-600"
+                  className="w-14 h-14 rounded-full object-cover ring-2 ring-blue-500"
                 />
               ) : (
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-gray-600">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center ring-2 ring-blue-400">
                   <span className="text-white font-semibold text-lg">
                     {getInitials(displayName)}
                   </span>
@@ -95,11 +114,15 @@ const UserLayout = () => {
               <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full ring-2 ring-gray-900"></div>
             </div>
 
-            {/* User Info */}
             <div className="flex-1 min-w-0">
-              <h2 className="text-white font-semibold text-base truncate">
-                {displayName}
-              </h2>
+              <div className="flex items-center gap-2 mb-0.5">
+                <h2 className="text-white font-semibold text-base truncate">
+                  {displayName}
+                </h2>
+                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-medium rounded border border-blue-500/30">
+                  User
+                </span>
+              </div>
               <p className="text-gray-400 text-sm truncate">
                 {displayEmail}
               </p>
@@ -107,10 +130,10 @@ const UserLayout = () => {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           <NavLink
             to="/user/dashboard"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -127,6 +150,7 @@ const UserLayout = () => {
 
           <NavLink
             to="/user/complaints"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -142,7 +166,10 @@ const UserLayout = () => {
           </NavLink>
 
           <button
-            onClick={handleOpenModal}
+            onClick={() => {
+              handleOpenModal();
+              closeSidebar();
+            }}
             className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-all"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,6 +180,7 @@ const UserLayout = () => {
 
           <NavLink
             to="/user/profile"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -168,7 +196,6 @@ const UserLayout = () => {
           </NavLink>
         </nav>
 
-        {/* Logout Button */}
         <div className="px-4 py-4 border-t border-gray-700">
           <button
             onClick={handleLogout}
@@ -182,12 +209,25 @@ const UserLayout = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto bg-white">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">User Portal</h1>
+          <div className="w-6"></div>
+        </header>
 
-      {/* Modal */}
+        <main className="flex-1 overflow-y-auto bg-white">
+          <Outlet />
+        </main>
+      </div>
+
       <ComplaintModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

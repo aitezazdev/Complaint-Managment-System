@@ -20,7 +20,10 @@ import {
   Eye,
   Pencil,
   Trash2,
-  FileText
+  FileText,
+  ChevronDown,
+  Plus,
+  AlertCircle
 } from "lucide-react";
 
 const UserComplaints = () => {
@@ -192,291 +195,305 @@ const UserComplaints = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white border-b border-slate-200 px-6 py-6 mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
+              <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                 My Complaints
               </h1>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm sm:text-base text-slate-600 mt-2">
                 Manage and track all your submitted complaints
               </p>
             </div>
             <button
               onClick={() => openModal('create')}
-              className="mt-4 sm:mt-0 inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
+              className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-all text-sm font-semibold shadow-lg hover:shadow-xl">
+              <Plus className="w-4 h-4" />
               Submit Complaint
             </button>
           </div>
         </div>
 
-        <div className="px-6">
-          <div className="bg-white rounded-lg border border-slate-200 mb-4 p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search by title, description, or address..."
-                value={filters.search}
-                onChange={(e) =>
-                  setFilters({ ...filters, search: e.target.value })
-                }
-                className="w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-sm"
-              />
-              {filters.search && (
-                <button
-                  onClick={() => setFilters({ ...filters, search: "" })}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
+        {/* Search Bar */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-4 p-4 sm:p-5 transition-all hover:shadow-md">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by title, description, or address..."
+              value={filters.search}
+              onChange={(e) =>
+                setFilters({ ...filters, search: e.target.value })
+              }
+              className="w-full pl-12 pr-12 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-sm sm:text-base transition-all"
+            />
+            {filters.search && (
+              <button
+                onClick={() => setFilters({ ...filters, search: "" })}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
+        </div>
 
-          <div className="bg-white rounded-lg border border-slate-200 mb-6">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors">
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-slate-600" />
-                <span className="font-medium text-slate-900 text-sm">
-                  Filters
-                </span>
+        {/* Filters */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 overflow-hidden transition-all hover:shadow-md">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="w-full flex items-center justify-between p-4 sm:p-5 text-left hover:bg-slate-50 transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                <Filter className="w-4 h-4 text-slate-700" />
+              </div>
+              <div>
+                <span className="font-semibold text-slate-900 text-sm sm:text-base">Filters</span>
                 {hasActiveFilters && (
-                  <span className="bg-slate-900 text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                  <span className="ml-2 bg-slate-900 text-white text-xs font-medium px-2.5 py-1 rounded-full">
                     Active
                   </span>
                 )}
               </div>
-              <span className="text-sm text-slate-500">
-                {showFilters ? "Hide" : "Show"}
-              </span>
-            </button>
+            </div>
+            <ChevronDown className={`w-5 h-5 text-slate-500 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          </button>
 
-            {showFilters && (
-              <div className="p-4 border-t border-slate-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Status
-                    </label>
-                    <select
-                      value={filters.status}
-                      onChange={(e) =>
-                        setFilters({ ...filters, status: e.target.value })
-                      }
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
-                      <option value="">All Status</option>
-                      <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Resolved">Resolved</option>
-                      <option value="Rejected">Rejected</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Category
-                    </label>
-                    <select
-                      value={filters.category}
-                      onChange={(e) =>
-                        setFilters({ ...filters, category: e.target.value })
-                      }
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
-                      <option value="">All Categories</option>
-                      <option value="Infrastructure">Infrastructure</option>
-                      <option value="Sanitation">Sanitation</option>
-                      <option value="Water Supply">Water Supply</option>
-                      <option value="Electricity">Electricity</option>
-                      <option value="Road">Road</option>
-                      <option value="Street Light">Street Light</option>
-                      <option value="Garbage">Garbage</option>
-                      <option value="Others">Others</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-slate-700 mb-1.5 uppercase tracking-wider">
-                      Priority
-                    </label>
-                    <select
-                      value={filters.priority}
-                      onChange={(e) =>
-                        setFilters({ ...filters, priority: e.target.value })
-                      }
-                      className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent">
-                      <option value="">All Priorities</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                      <option value="Critical">Critical</option>
-                    </select>
-                  </div>
+          {showFilters && (
+            <div className="p-4 sm:p-5 border-t border-slate-200 bg-slate-50/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">
+                    Status
+                  </label>
+                  <select
+                    value={filters.status}
+                    onChange={(e) =>
+                      setFilters({ ...filters, status: e.target.value })
+                    }
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent bg-white transition-all">
+                    <option value="">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
                 </div>
 
-                {hasActiveFilters && (
-                  <button
-                    onClick={resetFilters}
-                    className="mt-4 text-sm text-slate-900 hover:text-slate-700 font-medium">
-                    Clear All Filters
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">
+                    Category
+                  </label>
+                  <select
+                    value={filters.category}
+                    onChange={(e) =>
+                      setFilters({ ...filters, category: e.target.value })
+                    }
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent bg-white transition-all">
+                    <option value="">All Categories</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Sanitation">Sanitation</option>
+                    <option value="Water Supply">Water Supply</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Road">Road</option>
+                    <option value="Street Light">Street Light</option>
+                    <option value="Garbage">Garbage</option>
+                    <option value="Others">Others</option>
+                  </select>
+                </div>
 
-          {hasActiveFilters && (
-            <div className="mb-4 text-sm text-slate-600">
-              Showing{" "}
-              <span className="font-medium text-slate-900">
-                {filteredComplaints.length}
-              </span>{" "}
-              of{" "}
-              <span className="font-medium text-slate-900">
-                {userComplaints.length}
-              </span>{" "}
-              complaints
-            </div>
-          )}
-
-          {filteredComplaints.length === 0 ? (
-            <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="w-8 h-8 text-slate-400" />
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">
+                    Priority
+                  </label>
+                  <select
+                    value={filters.priority}
+                    onChange={(e) =>
+                      setFilters({ ...filters, priority: e.target.value })
+                    }
+                    className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent bg-white transition-all">
+                    <option value="">All Priorities</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                  </select>
+                </div>
               </div>
-              <h3 className="text-base font-medium text-slate-900 mb-2">
-                No complaints found
-              </h3>
-              <p className="text-sm text-slate-600 mb-6 max-w-sm mx-auto">
-                {userComplaints.length === 0
-                  ? "You haven't submitted any complaints yet."
-                  : "No complaints match your current filters."}
-              </p>
-              {userComplaints.length === 0 ? (
-                <button
-                  onClick={() => openModal('create')}
-                  className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
-                  Submit Your First Complaint
-                </button>
-              ) : (
+
+              {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-lg hover:bg-slate-800 transition-colors text-sm font-medium">
-                  Clear Filters
+                  className="mt-4 text-sm text-slate-900 hover:text-slate-700 font-semibold flex items-center gap-2 transition-colors">
+                  <X className="w-4 h-4" />
+                  Clear All Filters
                 </button>
               )}
             </div>
-          ) : (
-            <div className="space-y-4 pb-6">
-              {filteredComplaints.map((complaint) => (
-                <div
-                  key={complaint._id}
-                  className="bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-all p-5">
-                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-start gap-4">
-                        {complaint.images && complaint.images.length > 0 ? (
-                          <div className="relative flex-shrink-0">
-                            <img
-                              src={complaint.images[0].url}
-                              alt={complaint.title}
-                              className="w-20 h-20 object-cover rounded-lg border border-slate-200"
-                            />
-                            {complaint.images.length > 1 && (
-                              <div className="absolute -bottom-1 -right-1 bg-slate-900 text-white text-xs font-medium rounded-full w-6 h-6 flex items-center justify-center border-2 border-white">
-                                +{complaint.images.length - 1}
-                              </div>
-                            )}
+          )}
+        </div>
+
+        {/* Results Count */}
+        {hasActiveFilters && (
+          <div className="mb-4 px-1">
+            <p className="text-sm text-slate-600">
+              Showing <span className="font-bold text-slate-900">{filteredComplaints.length}</span> of <span className="font-bold text-slate-900">{userComplaints.length}</span> complaints
+            </p>
+          </div>
+        )}
+
+        {/* Complaints List */}
+        {filteredComplaints.length === 0 ? (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+              <FileText className="w-10 h-10 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              No complaints found
+            </h3>
+            <p className="text-sm text-slate-600 mb-6 max-w-sm mx-auto">
+              {userComplaints.length === 0
+                ? "You haven't submitted any complaints yet."
+                : "No complaints match your current filters."}
+            </p>
+            {userComplaints.length === 0 ? (
+              <button
+                onClick={() => openModal('create')}
+                className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-lg hover:bg-slate-800 transition-all text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <Plus className="w-4 h-4" />
+                Submit Your First Complaint
+              </button>
+            ) : (
+              <button
+                onClick={resetFilters}
+                className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-lg hover:bg-slate-800 transition-all text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <X className="w-4 h-4" />
+                Clear Filters
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4 pb-6">
+            {filteredComplaints.map((complaint) => (
+              <div
+                key={complaint._id}
+                className="bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-200 p-4 sm:p-6 group">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                      {/* Image */}
+                      {complaint.images && complaint.images.length > 0 ? (
+                        <div className="relative flex-shrink-0 w-full sm:w-24 h-48 sm:h-24">
+                          <img
+                            src={complaint.images[0].url}
+                            alt={complaint.title}
+                            className="w-full h-full object-cover rounded-lg border border-slate-200 shadow-sm"
+                          />
+                          {complaint.images.length > 1 && (
+                            <div className="absolute -bottom-2 -right-2 bg-slate-900 text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center border-2 border-white shadow-lg">
+                              +{complaint.images.length - 1}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="w-full sm:w-24 h-48 sm:h-24 flex-shrink-0 bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg flex items-center justify-center">
+                          <ImageIcon className="w-10 h-10 text-slate-300" />
+                        </div>
+                      )}
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2 line-clamp-1">
+                          {complaint.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                          {complaint.description}
+                        </p>
+
+                        {/* Badges */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold border shadow-sm ${getStatusColor(complaint.status)}`}>
+                            {complaint.status}
+                          </span>
+                          <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold border shadow-sm ${getPriorityColor(complaint.priority)}`}>
+                            {complaint.priority}
+                          </span>
+                          <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200 shadow-sm">
+                            {complaint.category}
+                          </span>
+                        </div>
+
+                        {/* Meta Info */}
+                        <div className="space-y-2 text-xs text-slate-600">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">{complaint.address}</span>
                           </div>
-                        ) : (
-                          <div className="w-20 h-20 flex-shrink-0 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center">
-                            <ImageIcon className="w-8 h-8 text-slate-400" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-medium text-slate-900 mb-1.5">
-                            {complaint.title}
-                          </h3>
-                          <p className="text-sm text-slate-600 mb-3 line-clamp-2">
-                            {complaint.description}
-                          </p>
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getStatusColor(complaint.status)}`}>
-                              {complaint.status}
-                            </span>
-                            <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getPriorityColor(complaint.priority)}`}>
-                              {complaint.priority}
-                            </span>
-                            <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200">
-                              {complaint.category}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-4 text-xs text-slate-500">
-                            <span className="flex items-center gap-1.5">
-                              <MapPin className="w-3.5 h-3.5" />
-                              {complaint.address}
-                            </span>
-                            <span className="flex items-center gap-1.5">
-                              <Calendar className="w-3.5 h-3.5" />
+                          <div className="flex flex-wrap items-center gap-4">
+                            <span className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4 flex-shrink-0" />
                               {formatDate(complaint.createdAt)}
                             </span>
                             {complaint.images && complaint.images.length > 0 && (
-                              <span className="flex items-center gap-1.5">
-                                <ImageIcon className="w-3.5 h-3.5" />
+                              <span className="flex items-center gap-2">
+                                <ImageIcon className="w-4 h-4 flex-shrink-0" />
                                 {complaint.images.length} image(s)
                               </span>
                             )}
                           </div>
-                          {complaint.adminNotes && (
-                            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                              <p className="text-xs font-medium text-blue-900 mb-1">
-                                Admin Notes:
-                              </p>
-                              <p className="text-xs text-blue-700">
-                                {complaint.adminNotes}
-                              </p>
-                            </div>
-                          )}
                         </div>
+
+                        {/* Admin Notes */}
+                        {complaint.adminNotes && (
+                          <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                            <p className="text-xs font-semibold text-blue-900 mb-1 flex items-center gap-1.5">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              Admin Notes:
+                            </p>
+                            <p className="text-xs text-blue-700 leading-relaxed">
+                              {complaint.adminNotes}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
+                  </div>
 
-                    <div className="flex lg:flex-col gap-2">
-                      <button
-                        onClick={() => openModal('view', complaint)}
-                        className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200 font-medium"
-                        title="View Details">
-                        <Eye className="w-4 h-4" />
-                        <span className="hidden sm:inline">View</span>
-                      </button>
-                      {canEdit(complaint) && (
-                        <>
-                          <button
-                            onClick={() => openModal('edit', complaint)}
-                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200 font-medium"
-                            title="Edit Complaint">
-                            <Pencil className="w-4 h-4" />
-                            <span className="hidden sm:inline">Edit</span>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteClick(complaint)}
-                            className="flex items-center gap-1.5 px-3 py-2 text-sm text-rose-700 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors border border-rose-200 font-medium"
-                            title="Delete Complaint">
-                            <Trash2 className="w-4 h-4" />
-                            <span className="hidden sm:inline">Delete</span>
-                          </button>
-                        </>
-                      )}
-                    </div>
+                  {/* Action Buttons */}
+                  <div className="flex sm:flex-row lg:flex-col gap-2 sm:gap-2">
+                    <button
+                      onClick={() => openModal('view', complaint)}
+                      className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-slate-700 bg-slate-50 rounded-lg hover:bg-slate-100 transition-all border border-slate-200 font-semibold shadow-sm hover:shadow"
+                      title="View Details">
+                      <Eye className="w-4 h-4" />
+                      <span>View</span>
+                    </button>
+                    {canEdit(complaint) && (
+                      <>
+                        <button
+                          onClick={() => openModal('edit', complaint)}
+                          className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all border border-blue-200 font-semibold shadow-sm hover:shadow"
+                          title="Edit Complaint">
+                          <Pencil className="w-4 h-4" />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(complaint)}
+                          className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-rose-700 bg-rose-50 rounded-lg hover:bg-rose-100 transition-all border border-rose-200 font-semibold shadow-sm hover:shadow"
+                          title="Delete Complaint">
+                          <Trash2 className="w-4 h-4" />
+                          <span>Delete</span>
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <ComplaintModal
