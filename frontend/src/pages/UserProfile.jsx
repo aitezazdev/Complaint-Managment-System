@@ -201,10 +201,11 @@ const UserProfile = () => {
     return <PageLoader message="Loading profile..." />;
   }
 
+  const isAdmin = currentUserProfile?.role === "admin";
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <div className="bg-white border-b border-gray-200 px-6 py-5 mb-6">
           <div className="flex items-center justify-between">
             <div>
@@ -241,7 +242,6 @@ const UserProfile = () => {
         <div className="px-6">
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <form onSubmit={handleSubmit}>
-              {/* Profile Header Section */}
               <div className="p-6 border-b border-gray-200 bg-gray-50">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="relative">
@@ -303,7 +303,6 @@ const UserProfile = () => {
               </div>
 
               <div className="p-6 space-y-6">
-                {/* Basic Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <FiUser className="w-5 h-5 text-gray-900" />
@@ -341,8 +340,7 @@ const UserProfile = () => {
                   </div>
                 </div>
 
-                {/* Complaint Statistics */}
-                {currentUserProfile?.statistics && (
+                {!isAdmin && currentUserProfile?.statistics && (
                   <div className="pt-6 border-t border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                       <FiFileText className="w-5 h-5 text-gray-900" />
@@ -383,7 +381,6 @@ const UserProfile = () => {
                   </div>
                 )}
 
-                {/* Change Password Section */}
                 {isEditing && (
                   <div className="pt-6 border-t border-gray-200">
                     <div className="flex items-center justify-between mb-4">
@@ -441,7 +438,6 @@ const UserProfile = () => {
                   </div>
                 )}
 
-                {/* Account Information */}
                 <div className="pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Account Information
@@ -475,7 +471,6 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               {isEditing && (
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
                   <button

@@ -5,7 +5,7 @@ import {
   sendComplaintResolvedEmail,
   sendComplaintRejectedEmail,
   sendComplaintInProgressEmail,
-} from "../utils/emailUtils.js";
+} from "../utils/EmailUtils.js";
 
 const deleteFromCloudinary = async (publicId) => {
   try {
