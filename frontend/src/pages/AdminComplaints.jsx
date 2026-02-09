@@ -416,7 +416,6 @@ const AdminComplaints = () => {
                         </div>
                       )}
 
-                      {/* Content */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2 line-clamp-1">
                           {complaint.title}
@@ -464,7 +463,6 @@ const AdminComplaints = () => {
                           </div>
                         </div>
 
-                        {/* Admin Notes */}
                         {complaint.adminNotes && (
                           <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
                             <p className="text-xs font-semibold text-blue-900 mb-1 flex items-center gap-1.5">
@@ -480,7 +478,6 @@ const AdminComplaints = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex sm:flex-row lg:flex-col gap-2 sm:gap-2">
                     <button
                       onClick={() => openViewModal(complaint)}
@@ -510,7 +507,6 @@ const AdminComplaints = () => {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-slate-700 font-medium">
@@ -537,7 +533,6 @@ const AdminComplaints = () => {
         )}
       </div>
 
-      {/* View Modal */}
       <ComplaintModal
         isOpen={viewModalState.isOpen}
         onClose={closeViewModal}
@@ -545,11 +540,9 @@ const AdminComplaints = () => {
         complaintData={viewModalState.complaint}
       />
 
-      {/* Update Modal */}
       {showUpdateModal && selectedComplaint && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl my-8 animate-in fade-in zoom-in duration-200">
-            {/* Modal Header */}
             <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Update Complaint</h2>
               <button
@@ -559,9 +552,7 @@ const AdminComplaints = () => {
               </button>
             </div>
 
-            {/* Modal Content */}
             <div className="p-6 space-y-5 max-h-[calc(100vh-200px)] overflow-y-auto">
-              {/* Complaint Info */}
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-4 border border-slate-200">
                 <h3 className="font-semibold text-slate-900 mb-2 text-base">{selectedComplaint.title}</h3>
                 <p className="text-sm text-slate-600 mb-3">{selectedComplaint.description}</p>
@@ -577,7 +568,6 @@ const AdminComplaints = () => {
                 </div>
               </div>
 
-              {/* User Info */}
               <div className="border-b border-slate-200 pb-4 space-y-2">
                 <p className="text-sm text-slate-600">
                   <span className="font-semibold text-slate-900">Submitted by:</span> {selectedComplaint.userId?.name} ({selectedComplaint.userId?.email})
@@ -587,7 +577,6 @@ const AdminComplaints = () => {
                 </p>
               </div>
 
-              {/* Images */}
               {selectedComplaint.images && selectedComplaint.images.length > 0 && (
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-3">
@@ -606,7 +595,6 @@ const AdminComplaints = () => {
                 </div>
               )}
 
-              {/* Status Select */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Status <span className="text-rose-500">*</span>
@@ -622,7 +610,6 @@ const AdminComplaints = () => {
                 </select>
               </div>
 
-              {/* Priority Select */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Priority <span className="text-rose-500">*</span>
@@ -638,7 +625,6 @@ const AdminComplaints = () => {
                 </select>
               </div>
 
-              {/* Admin Notes */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Admin Notes
@@ -652,7 +638,6 @@ const AdminComplaints = () => {
                 />
               </div>
 
-              {/* Previous Notes */}
               {selectedComplaint.adminNotes && (
                 <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg p-4">
                   <p className="text-xs font-semibold text-amber-800 mb-1.5 flex items-center gap-1.5">
@@ -664,7 +649,6 @@ const AdminComplaints = () => {
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="p-6 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-3 bg-slate-50 rounded-b-2xl">
               <button
                 onClick={closeModals}
@@ -682,7 +666,6 @@ const AdminComplaints = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirmState.isOpen}
         onClose={() => setDeleteConfirmState({ isOpen: false, complaintId: null, complaintTitle: '' })}

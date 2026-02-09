@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slice/auth';
 import { fetchCurrentUserProfile } from '../store/slice/user';
 import { BarChart3 } from "lucide-react";
-
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
 
 const AdminLayout = () => {
   const dispatch = useDispatch();
@@ -12,12 +12,17 @@ const AdminLayout = () => {
   const { user } = useSelector((state) => state.auth);
   const { currentUserProfile } = useSelector((state) => state.user);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCurrentUserProfile());
   }, [dispatch]);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = () => {
     dispatch(logout());
     navigate('/login');
   };
@@ -176,6 +181,7 @@ const AdminLayout = () => {
 
            <NavLink
             to="/admin/analytics"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -187,7 +193,6 @@ const AdminLayout = () => {
             <BarChart3 size={20} />
             Analytics
           </NavLink>
-
 
           <NavLink
             to="/admin/profile"
@@ -204,13 +209,13 @@ const AdminLayout = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            System Settings
+            Profile Settings
           </NavLink>
         </nav>
 
         <div className="px-4 py-4 border-t border-gray-700">
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded-lg text-sm font-medium transition-all"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,6 +244,17 @@ const AdminLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={handleLogoutConfirm}
+        title="Sign Out"
+        message="Are you sure you want to sign out from the admin panel? You will need to log in again to access your account."
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        type="warning"
+      />
     </div>
   );
 };
