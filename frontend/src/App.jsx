@@ -12,6 +12,7 @@ import UserComplaints from "./pages/UserComplaints";
 import UserProfile from "./pages/UserProfile";
 import { Toaster } from "react-hot-toast";
 import PageLoader from "./utils/Loading";
+import AnalyticsAdmin from "./pages/AnalyticsAdmin";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, user, loading } = useSelector((state) => state.auth);
@@ -94,7 +95,8 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<AllUsers />} />
           <Route path="complaints" element={<AdminComplaints />} />
-          <Route path="settings" element={<UserProfile />} />
+          <Route path="analytics" element={<AnalyticsAdmin />} />
+          <Route path="Profile" element={<UserProfile />} />
         </Route>
 
         <Route

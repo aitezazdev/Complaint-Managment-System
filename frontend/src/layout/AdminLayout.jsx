@@ -3,6 +3,8 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slice/auth';
 import { fetchCurrentUserProfile } from '../store/slice/user';
+import { BarChart3 } from "lucide-react";
+
 
 const AdminLayout = () => {
   const dispatch = useDispatch();
@@ -172,8 +174,23 @@ const AdminLayout = () => {
             All Complaints
           </NavLink>
 
+           <NavLink
+            to="/admin/analytics"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                isActive
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              }`
+            }
+          >
+            <BarChart3 size={20} />
+            Analytics
+          </NavLink>
+
+
           <NavLink
-            to="/admin/settings"
+            to="/admin/profile"
             onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
