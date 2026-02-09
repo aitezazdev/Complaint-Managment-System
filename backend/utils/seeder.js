@@ -1,4 +1,3 @@
-// utils/seeder.js
 import User from "../models/userModel.js";
 import dotenv from "dotenv";
 import {connectDB} from "../config/db.js";

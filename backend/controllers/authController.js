@@ -2,6 +2,7 @@ import generateToken from "../utils/generateToken.js";
 import User from "../models/userModel.js";
 import { sendAccountCreatedEmail } from "../utils/SendEmail.js";
 
+// register a new user
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -27,7 +28,6 @@ export const registerUser = async (req, res) => {
     });
 
     if (user) {
-      // send email (non-blocking)
       sendAccountCreatedEmail(user.email, user.name)
         .catch(err => console.log("Email error:", err));
 
@@ -58,6 +58,7 @@ export const registerUser = async (req, res) => {
   }
 };
 
+// login user
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -86,6 +87,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
+// get all users (admin only)
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).select("-password");
@@ -99,6 +101,7 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+// get user by id
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
@@ -115,6 +118,7 @@ export const getUserById = async (req, res) => {
   }
 };
 
+// delete a user
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);

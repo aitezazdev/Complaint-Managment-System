@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 
+// promote a user to admin
 export const promoteToAdmin = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);

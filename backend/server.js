@@ -21,7 +21,6 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-// API Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/complaint", complaintRoutes);

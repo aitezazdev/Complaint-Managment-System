@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Existing function
+// funx setup so it will sends users with email
 export const sendAccountCreatedEmail = async (to, name) => {
   const mailOptions = {
     from: `"CMC Support" <${process.env.EMAIL_USER}>`,
@@ -18,7 +18,7 @@ export const sendAccountCreatedEmail = async (to, name) => {
     subject: "Welcome to Complaint Management System (CMC)",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>Welcome to CMC 🎉</h2>
+        <h2>Welcome to CMC</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Your account has been successfully created on the 
         <b>Complaint Management System (CMC)</b>.</p>
@@ -46,7 +46,7 @@ export const sendComplaintCreatedEmail = async (to, name, complaintData) => {
     subject: "Complaint Submitted Successfully - CMC",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
-        <h2 style="color: #4CAF50;">✅ Complaint Submitted Successfully</h2>
+        <h2 style="color: #4CAF50;">Complaint Submitted Successfully</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Your complaint has been successfully submitted to our system.</p>
 
@@ -98,7 +98,7 @@ export const sendComplaintResolvedEmail = async (to, name, complaintData, adminN
     subject: "Your Complaint Has Been Resolved - CMC",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
-        <h2 style="color: #4CAF50;">✅ Complaint Resolved</h2>
+        <h2 style="color: #4CAF50;">Complaint Resolved</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Great news! Your complaint has been successfully resolved.</p>
 
@@ -147,7 +147,7 @@ export const sendComplaintRejectedEmail = async (to, name, complaintData, adminN
     subject: "Complaint Status Update - CMC",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
-        <h2 style="color: #f44336;">❌ Complaint Rejected</h2>
+        <h2 style="color: #f44336;">Complaint Rejected</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>We regret to inform you that your complaint has been reviewed and rejected.</p>
 
@@ -196,7 +196,7 @@ export const sendComplaintInProgressEmail = async (to, name, complaintData, admi
     subject: "Complaint Status Update - In Progress - CMC",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px;">
-        <h2 style="color: #2196F3;">🔄 Complaint In Progress</h2>
+        <h2 style="color: #2196F3;">Complaint In Progress</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Your complaint is now being actively worked on by our team.</p>
 

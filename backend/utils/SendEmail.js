@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',  // Use service instead of host/port
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -17,7 +17,7 @@ export const sendAccountCreatedEmail = async (to, name) => {
     subject: "Welcome to Complaint Management System (CMC)",
     html: `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>Welcome to CMC 🎉</h2>
+        <h2>Welcome to CMC</h2>
         <p>Hello <strong>${name}</strong>,</p>
         <p>Your account has been successfully created on the 
         <b>Complaint Management System (CMC)</b>.</p>

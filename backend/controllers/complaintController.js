@@ -7,6 +7,7 @@ import {
   sendComplaintInProgressEmail,
 } from "../utils/EmailUtils.js";
 
+// func so it deletes images from cloudinary succ
 const deleteFromCloudinary = async (publicId) => {
   try {
     await Promise.race([
@@ -22,6 +23,7 @@ const deleteFromCloudinary = async (publicId) => {
   }
 };
 
+// create complaint
 export const createComplaint = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -77,7 +79,6 @@ export const createComplaint = async (req, res) => {
 
     await newComplaint.populate("userId", "name email");
 
-    // Send email notification to user
     try {
       await sendComplaintCreatedEmail(
         req.user.email,
@@ -92,7 +93,6 @@ export const createComplaint = async (req, res) => {
       );
     } catch (emailError) {
       console.error("Failed to send email:", emailError.message);
-      // Don't fail the request if email fails
     }
 
     res.status(201).json({
@@ -109,6 +109,7 @@ export const createComplaint = async (req, res) => {
   }
 };
 
+// update a complaint
 export const updateComplaint = async (req, res) => {
   try {
     const { id } = req.params;
@@ -203,7 +204,6 @@ export const updateComplaint = async (req, res) => {
       { new: true },
     ).populate("userId", "name email");
 
-    // Send email notification when admin updates status
     if (isAdmin && req.body.status && req.body.status !== previousStatus) {
       try {
         const complaintData = {
@@ -237,7 +237,6 @@ export const updateComplaint = async (req, res) => {
         }
       } catch (emailError) {
         console.error("Failed to send email:", emailError.message);
-        // Don't fail the request if email fails
       }
     }
 
@@ -255,6 +254,7 @@ export const updateComplaint = async (req, res) => {
   }
 };
 
+// delete a complaint
 export const deleteComplaint = async (req, res) => {
   try {
     const { id } = req.params;
@@ -306,6 +306,7 @@ export const deleteComplaint = async (req, res) => {
   }
 };
 
+// get a single complaint
 export const getComplaintById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -335,6 +336,7 @@ export const getComplaintById = async (req, res) => {
   }
 };
 
+// get complaints of user who is logged in
 export const getUserComplaints = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -357,6 +359,7 @@ export const getUserComplaints = async (req, res) => {
   }
 };
 
+// get all complaints (admin)
 export const getAllComplaints = async (req, res) => {
   try {
     const { status, category, priority, page = 1, limit = 10 } = req.query;

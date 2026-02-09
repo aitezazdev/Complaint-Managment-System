@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import { Complaint } from "../models/complaintModel.js";
 import cloudinary from "../config/cloudinary.js";
 
+// func so it deletes images from cloudinary succ
 const deleteFromCloudinary = async (publicId) => {
   try {
     await Promise.race([
@@ -237,6 +238,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
+// delete user and all its data
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
