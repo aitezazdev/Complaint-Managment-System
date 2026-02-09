@@ -53,6 +53,8 @@ const AdminDashboard = () => {
     }
   };
 
+  // Agar loading true hai to loading spinner show karo
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">

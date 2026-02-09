@@ -84,7 +84,6 @@ const UserDashboard = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="bg-white border-b border-slate-200 px-6 py-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -152,9 +151,7 @@ const UserDashboard = () => {
             </div>
           </div>
 
-          {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Activity */}
             <div className="lg:col-span-2 bg-white rounded-lg border border-slate-200">
               <div className="px-6 py-4 border-b border-slate-200">
                 <div className="flex items-center justify-between">
@@ -272,11 +269,9 @@ const UserDashboard = () => {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
               {userComplaints.length > 0 && (
                 <>
-                  {/* Status Distribution */}
                   <div className="bg-white rounded-lg border border-slate-200 p-5">
                     <h2 className="text-base font-semibold text-slate-900 mb-4">
                       Status Breakdown
@@ -307,7 +302,6 @@ const UserDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Quick Summary */}
                   <div className="bg-white rounded-lg border border-slate-200 p-5">
                     <h2 className="text-base font-semibold text-slate-900 mb-4">
                       Summary

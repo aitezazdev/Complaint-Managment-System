@@ -211,7 +211,6 @@ const UserProfile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -245,10 +244,8 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* Main Card */}
         <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-lg">
           <form onSubmit={handleSubmit}>
-            {/* Profile Header */}
             <div className="p-6 sm:p-8 border-b border-slate-200 bg-gradient-to-br from-slate-50 to-white">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative">
@@ -314,9 +311,7 @@ const UserProfile = () => {
               </div>
             </div>
 
-            {/* Form Content */}
             <div className="p-6 sm:p-8 space-y-8">
-              {/* Basic Information */}
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -356,7 +351,6 @@ const UserProfile = () => {
                 </div>
               </div>
 
-              {/* Complaint Statistics */}
               {!isAdmin && currentUserProfile?.statistics && (
                 <div className="pt-8 border-t border-slate-200">
                   <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -400,7 +394,6 @@ const UserProfile = () => {
                 </div>
               )}
 
-              {/* Change Password Section */}
               {isEditing && (
                 <div className="pt-8 border-t border-slate-200">
                   <div className="flex items-center justify-between mb-4">
@@ -459,7 +452,6 @@ const UserProfile = () => {
                 </div>
               )}
 
-              {/* Account Information */}
               <div className="pt-8 border-t border-slate-200">
                 <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
@@ -498,7 +490,6 @@ const UserProfile = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             {isEditing && (
               <div className="px-6 sm:px-8 py-5 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
                 <button
@@ -529,7 +520,6 @@ const UserProfile = () => {
         </div>
       </div>
 
-      {/* Delete Account Confirmation */}
       <ConfirmDialog
         isOpen={deleteAccountOpen}
         onClose={() => !deletingAccount && setDeleteAccountOpen(false)}

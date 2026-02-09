@@ -45,11 +45,14 @@ const AllUsers = () => {
     }
   };
 
+  // User ko view karne ke liye
+
   const handleViewUser = (user) => {
     setSelectedUser(user);
     setShowModal(true);
   };
 
+  // User ko delete karne ke liye
   const handleDeleteUser = async () => {
     if (!deleteConfirm.user) return;
 
@@ -69,7 +72,7 @@ const AllUsers = () => {
       setDeleteConfirm(prev => ({ ...prev, loading: false }));
     }
   };
-
+// User ko admin banane ke liye
   const handlePromoteToAdmin = async () => {
     if (!promoteConfirm.user) return;
 
@@ -92,6 +95,7 @@ const AllUsers = () => {
     }
   };
 
+  // User ko admin se user banane ke liye
   const handleDemoteFromAdmin = async () => {
     if (!demoteConfirm.user) return;
 
@@ -141,7 +145,7 @@ const AllUsers = () => {
       .slice(0, 2);
   };
 
-  // Filter users based on search and role
+// Search aur filter ke liye
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -172,7 +176,6 @@ const AllUsers = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
             User Management
@@ -182,7 +185,6 @@ const AllUsers = () => {
           </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 max-w-5xl mx-auto">
           <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-200 group">
             <div className="flex items-center gap-4 mb-4">
@@ -224,10 +226,8 @@ const AllUsers = () => {
           </div>
         </div>
 
-        {/* Search and Filter Bar */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-5 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
@@ -246,7 +246,6 @@ const AllUsers = () => {
               )}
             </div>
 
-            {/* Role Filter */}
             <div className="sm:w-48">
               <select
                 value={filterRole}
@@ -259,7 +258,6 @@ const AllUsers = () => {
             </div>
           </div>
 
-          {/* Results Count */}
           {(searchQuery || filterRole !== 'all') && (
             <div className="mt-4 pt-4 border-t border-slate-200">
               <p className="text-sm text-slate-600">
@@ -269,7 +267,6 @@ const AllUsers = () => {
           )}
         </div>
 
-        {/* Users Table - Desktop */}
         <div className="hidden lg:block bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -388,7 +385,7 @@ const AllUsers = () => {
           </div>
         </div>
 
-        {/* Users Cards - Mobile & Tablet */}
+{/* Responive : Mobile Aur diff devices kelye */}
         <div className="lg:hidden space-y-4">
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
@@ -428,7 +425,6 @@ const AllUsers = () => {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex gap-2 pt-4 border-t border-slate-200">
                   <button
                     onClick={() => handleViewUser(user)}
@@ -481,11 +477,9 @@ const AllUsers = () => {
         </div>
       </div>
 
-      {/* User Details Modal */}
       {showModal && selectedUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl my-8 animate-in fade-in zoom-in duration-200">
-            {/* Modal Header */}
             <div className="p-6 border-b border-slate-200 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white rounded-t-2xl">
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900">User Details</h2>
               <button
@@ -496,9 +490,7 @@ const AllUsers = () => {
               </button>
             </div>
 
-            {/* Modal Content */}
             <div className="p-6">
-              {/* User Profile Section */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 mb-6 pb-6 border-b border-slate-200">
                 {getProfileImage(selectedUser) ? (
                   <img
@@ -522,7 +514,6 @@ const AllUsers = () => {
                 </div>
               </div>
 
-              {/* User Information Grid */}
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-2 uppercase tracking-wider">User ID</label>
@@ -565,7 +556,6 @@ const AllUsers = () => {
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="p-6 bg-slate-50 rounded-b-2xl border-t border-slate-200">
               <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
                 <button
@@ -613,7 +603,6 @@ const AllUsers = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         onClose={() => setDeleteConfirm({ isOpen: false, user: null, loading: false })}
@@ -626,7 +615,6 @@ const AllUsers = () => {
         loading={deleteConfirm.loading}
       />
 
-      {/* Promote Confirmation Dialog */}
       <ConfirmDialog
         isOpen={promoteConfirm.isOpen}
         onClose={() => setPromoteConfirm({ isOpen: false, user: null, loading: false })}
@@ -639,7 +627,6 @@ const AllUsers = () => {
         loading={promoteConfirm.loading}
       />
 
-      {/* Demote Confirmation Dialog */}
       <ConfirmDialog
         isOpen={demoteConfirm.isOpen}
         onClose={() => setDemoteConfirm({ isOpen: false, user: null, loading: false })}

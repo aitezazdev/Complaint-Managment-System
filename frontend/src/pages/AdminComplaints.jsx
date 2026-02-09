@@ -53,6 +53,8 @@ const AdminComplaints = () => {
     adminNotes: ''
   });
 
+  // Search Aur Filter
+
   useEffect(() => {
     const fetchParams = {
       status: filters.status,
@@ -116,7 +118,7 @@ const AdminComplaints = () => {
       toast.error(error || 'Failed to update complaint');
     }
   };
-
+// Complain Delete karne kelye
   const handleDeleteClick = (complaint) => {
     setDeleteConfirmState({
       isOpen: true,
@@ -210,7 +212,6 @@ const AdminComplaints = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -230,7 +231,6 @@ const AdminComplaints = () => {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-4 p-4 sm:p-5 transition-all hover:shadow-md">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -251,7 +251,6 @@ const AdminComplaints = () => {
           </div>
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 overflow-hidden transition-all hover:shadow-md">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -355,7 +354,6 @@ const AdminComplaints = () => {
           )}
         </div>
 
-        {/* Results Count */}
         {hasActiveFilters && (
           <div className="mb-4 px-1">
             <p className="text-sm text-slate-600">
@@ -364,7 +362,6 @@ const AdminComplaints = () => {
           </div>
         )}
 
-        {/* Complaints List */}
         {filteredComplaints.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
@@ -424,7 +421,6 @@ const AdminComplaints = () => {
                           {complaint.description}
                         </p>
 
-                        {/* Badges */}
                         <div className="flex flex-wrap gap-2 mb-4">
                           <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold border shadow-sm ${getStatusColor(complaint.status)}`}>
                             {complaint.status}
@@ -437,7 +433,6 @@ const AdminComplaints = () => {
                           </span>
                         </div>
 
-                        {/* Meta Info */}
                         <div className="space-y-2 text-xs text-slate-600">
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4 flex-shrink-0" />

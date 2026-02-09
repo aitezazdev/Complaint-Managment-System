@@ -197,7 +197,6 @@ const UserComplaints = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -217,7 +216,6 @@ const UserComplaints = () => {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-4 p-4 sm:p-5 transition-all hover:shadow-md">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -240,7 +238,6 @@ const UserComplaints = () => {
           </div>
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 overflow-hidden transition-all hover:shadow-md">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -335,7 +332,6 @@ const UserComplaints = () => {
           )}
         </div>
 
-        {/* Results Count */}
         {hasActiveFilters && (
           <div className="mb-4 px-1">
             <p className="text-sm text-slate-600">
@@ -344,7 +340,6 @@ const UserComplaints = () => {
           </div>
         )}
 
-        {/* Complaints List */}
         {filteredComplaints.length === 0 ? (
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
@@ -383,7 +378,6 @@ const UserComplaints = () => {
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                      {/* Image */}
                       {complaint.images && complaint.images.length > 0 ? (
                         <div className="relative flex-shrink-0 w-full sm:w-24 h-48 sm:h-24">
                           <img
@@ -403,7 +397,6 @@ const UserComplaints = () => {
                         </div>
                       )}
 
-                      {/* Content */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2 line-clamp-1">
                           {complaint.title}
@@ -412,7 +405,6 @@ const UserComplaints = () => {
                           {complaint.description}
                         </p>
 
-                        {/* Badges */}
                         <div className="flex flex-wrap gap-2 mb-4">
                           <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold border shadow-sm ${getStatusColor(complaint.status)}`}>
                             {complaint.status}
@@ -425,7 +417,6 @@ const UserComplaints = () => {
                           </span>
                         </div>
 
-                        {/* Meta Info */}
                         <div className="space-y-2 text-xs text-slate-600">
                           <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 flex-shrink-0" />
@@ -445,7 +436,6 @@ const UserComplaints = () => {
                           </div>
                         </div>
 
-                        {/* Admin Notes */}
                         {complaint.adminNotes && (
                           <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
                             <p className="text-xs font-semibold text-blue-900 mb-1 flex items-center gap-1.5">
@@ -461,7 +451,6 @@ const UserComplaints = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex sm:flex-row lg:flex-col gap-2 sm:gap-2">
                     <button
                       onClick={() => openModal('view', complaint)}
