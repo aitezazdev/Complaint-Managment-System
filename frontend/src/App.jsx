@@ -84,7 +84,6 @@ function App() {
           }
         />
 
-        {/* Admin Routes */}
         <Route
           path="/admin"
           element={
@@ -98,7 +97,6 @@ function App() {
           <Route path="settings" element={<UserProfile />} />
         </Route>
 
-        {/* User Routes */}
         <Route
           path="/user"
           element={

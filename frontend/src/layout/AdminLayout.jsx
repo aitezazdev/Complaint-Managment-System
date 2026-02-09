@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/slice/auth';
@@ -9,8 +9,8 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const { currentUserProfile } = useSelector((state) => state.user);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Fetch user profile when component mounts
   useEffect(() => {
     dispatch(fetchCurrentUserProfile());
   }, [dispatch]);
@@ -20,7 +20,6 @@ const AdminLayout = () => {
     navigate('/login');
   };
 
-  // Get initials for avatar fallback
   const getInitials = (name) => {
     if (!name) return 'A';
     return name
@@ -31,9 +30,7 @@ const AdminLayout = () => {
       .slice(0, 2);
   };
 
-  // Get profile picture URL - handle both string and object formats
   const getProfilePictureUrl = () => {
-    // First try to get from currentUserProfile (most up-to-date)
     if (currentUserProfile?.profilePicture) {
       if (typeof currentUserProfile.profilePicture === 'object' && currentUserProfile.profilePicture.url) {
         return currentUserProfile.profilePicture.url;
@@ -43,7 +40,6 @@ const AdminLayout = () => {
       }
     }
     
-    // Fallback to auth user
     if (user?.profilePicture) {
       if (typeof user.profilePicture === 'object' && user.profilePicture.url) {
         return user.profilePicture.url;
@@ -56,14 +52,40 @@ const AdminLayout = () => {
     return null;
   };
 
-  // Get display name (prefer currentUserProfile, fallback to auth user)
   const displayName = currentUserProfile?.name || user?.name || 'Admin';
   const displayEmail = currentUserProfile?.email || user?.email || '';
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <aside className="w-72 bg-gradient-to-b from-gray-900 to-gray-800 flex flex-col shadow-xl">
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
+      <aside className={`
+        fixed lg:static inset-y-0 left-0 z-30
+        w-72 bg-gradient-to-b from-gray-900 to-gray-800 
+        flex flex-col shadow-xl
+        transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
         <div className="px-6 py-6 border-b border-gray-700">
+          <div className="flex items-center justify-between mb-4 lg:hidden">
+            <span className="text-white font-semibold">Menu</span>
+            <button
+              onClick={closeSidebar}
+              className="text-gray-400 hover:text-white"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
           <div className="flex items-center gap-4">
             <div className="relative">
               {getProfilePictureUrl() ? (
@@ -101,6 +123,7 @@ const AdminLayout = () => {
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           <NavLink
             to="/admin/dashboard"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -117,6 +140,7 @@ const AdminLayout = () => {
 
           <NavLink
             to="/admin/users"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -133,6 +157,7 @@ const AdminLayout = () => {
 
           <NavLink
             to="/admin/complaints"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -149,6 +174,7 @@ const AdminLayout = () => {
 
           <NavLink
             to="/admin/settings"
+            onClick={closeSidebar}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 isActive
@@ -165,7 +191,6 @@ const AdminLayout = () => {
           </NavLink>
         </nav>
 
-        {/* Logout Button */}
         <div className="px-4 py-4 border-t border-gray-700">
           <button
             onClick={handleLogout}
@@ -179,9 +204,24 @@ const AdminLayout = () => {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-y-auto bg-white">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <header className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
+          <div className="w-6"></div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto bg-white">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };
