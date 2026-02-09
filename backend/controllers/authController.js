@@ -6,10 +6,18 @@ export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Please fill in all fields" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+    }
+
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "An account with this email already exists" });
     }
 
     const user = await User.create({
@@ -32,17 +40,27 @@ export const registerUser = async (req, res) => {
         },
         token: generateToken(user._id),
         success: true,
-        message: "User registered successfully"
+        message: "Account created successfully"
       });
     }
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => {
+        if (err.kind === 'minlength') {
+          return `${err.path.charAt(0).toUpperCase() + err.path.slice(1)} must be at least ${err.properties.minlength} characters long`;
+        }
+        return err.message;
+      });
+      return res.status(400).json({ message: messages[0] || "Validation error" });
+    }
+    res.status(500).json({ message: "Something went wrong. Please try again" });
   }
 };
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({ message: "Please provide email and password" });
   }
@@ -64,7 +82,7 @@ export const loginUser = async (req, res) => {
       res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Something went wrong. Please try again" });
   }
 };
 
@@ -77,7 +95,7 @@ export const getAllUsers = async (req, res) => {
       count: users.length
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 };
 
@@ -93,7 +111,7 @@ export const getUserById = async (req, res) => {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Failed to fetch user" });
   }
 };
 
@@ -104,12 +122,12 @@ export const deleteUser = async (req, res) => {
       await User.findByIdAndDelete(req.params.id);
       res.json({ 
         success: true,
-        message: "User removed" 
+        message: "User removed successfully" 
       });
     } else {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Failed to delete user" });
   }
 };

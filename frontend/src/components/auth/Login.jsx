@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../store/slice/auth";
+import { loginUser, clearError } from "../../store/slice/auth";
 import { Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import AuthSidebar from "./AuthSidebar";
+
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -17,8 +18,12 @@ const Login = () => {
     password: "",
   });
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) {
+      dispatch(clearError());
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,6 +33,10 @@ const Login = () => {
   useEffect(() => {
     if (isAuthenticated) navigate("/");
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -105,7 +114,6 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               Don't have an account?{" "}

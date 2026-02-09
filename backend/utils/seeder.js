@@ -8,7 +8,7 @@ connectDB();
 
 const createAdmin = async () => {
   try {
-    const adminExists = await User.findOne({ email: "test1@admin.com" });
+    const adminExists = await User.findOne({ email: "test3@admin.com" });
 
     if (adminExists) {
       console.log("Admin already exists");
@@ -17,7 +17,7 @@ const createAdmin = async () => {
 
     const admin = await User.create({
       name: "Admin",
-      email: "test1@admin.com",
+      email: "test3@admin.com",
       password: "Admin@123", 
       role: "admin",
     });

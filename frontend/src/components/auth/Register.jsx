@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../../store/slice/auth";
+import { registerUser, clearError } from "../../store/slice/auth";
 import { User, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import AuthSidebar from "./AuthSidebar";
 
@@ -19,8 +19,12 @@ const Register = () => {
     password: "",
   });
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) {
+      dispatch(clearError());
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -30,6 +34,10 @@ const Register = () => {
   useEffect(() => {
     if (isAuthenticated) navigate("/");
   }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    dispatch(clearError());
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex bg-slate-50">
@@ -125,7 +133,6 @@ const Register = () => {
             </button>
           </form>
 
-          {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-600">
               Already have an account?{" "}
