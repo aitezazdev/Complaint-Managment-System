@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Add this to your index.css or global styles */
 
 @keyframes fadeIn {
   from {
@@ -17,7 +16,6 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Smooth transition for blur effect */
 .blur-sm {
   transition: filter 0.3s ease-in-out;
 }

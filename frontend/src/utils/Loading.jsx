@@ -1,6 +1,5 @@
 import React from "react";
 
-// Spinner Component
 export const Spinner = ({ size = "md", color = "blue" }) => {
   const sizeClasses = {
     sm: "h-4 w-4 border-2",
@@ -23,7 +22,6 @@ export const Spinner = ({ size = "md", color = "blue" }) => {
   );
 };
 
-// Full Page Loading
 export const PageLoader = ({ message = "Loading..." }) => {
   return (
     <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
@@ -35,7 +33,6 @@ export const PageLoader = ({ message = "Loading..." }) => {
   );
 };
 
-// Content Loading (for sections within a page)
 export const ContentLoader = ({ message = "Loading content..." }) => {
   return (
     <div className="flex flex-col items-center justify-center py-12">
@@ -45,7 +42,6 @@ export const ContentLoader = ({ message = "Loading content..." }) => {
   );
 };
 
-// Inline Loading (for buttons)
 export const InlineLoader = ({ text = "Loading..." }) => {
   return (
     <div className="flex items-center gap-2">
@@ -55,10 +51,9 @@ export const InlineLoader = ({ text = "Loading..." }) => {
   );
 };
 
-// Centered Loading (for empty states or loading states in cards)
 export const CenteredLoader = ({ message = "Loading..." }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px]">
+    <div className="flex flex-col items-center justify-center min-h-100">
       <Spinner size="lg" color="blue" />
       <p className="mt-4 text-gray-600 text-sm font-medium">{message}</p>
     </div>

@@ -1,6 +1,5 @@
 import api from "./api";
 
-// Get current user profile
 export const getCurrentUserProfile = async () => {
   try {
     const response = await api.get("/users/me");
@@ -11,14 +10,12 @@ export const getCurrentUserProfile = async () => {
       error.response?.data?.error ||
       error.message ||
       "Failed to fetch user profile";
-    throw errorMessage; // ✅ Throw string, not Error object
+    throw errorMessage;
   }
 };
 
-// Update user profile
 export const updateUserProfile = async (userId, formData) => {
   try {
-    // The api interceptor will handle auth token and Content-Type for FormData
     const response = await api.put(`/users/${userId}`, formData);
     return response.data;
   } catch (error) {
@@ -27,11 +24,10 @@ export const updateUserProfile = async (userId, formData) => {
       error.response?.data?.error ||
       error.message ||
       "Failed to update user profile";
-    throw errorMessage; // ✅ Throw string, not Error object
+    throw errorMessage;
   }
 };
 
-// Get all users (admin only)
 export const getAllUsers = async (params = {}) => {
   try {
     const response = await api.get("/users", { params });
@@ -42,11 +38,10 @@ export const getAllUsers = async (params = {}) => {
       error.response?.data?.error ||
       error.message ||
       "Failed to fetch users";
-    throw errorMessage; // ✅ Throw string, not Error object
+    throw errorMessage;
   }
 };
 
-// Get user by ID (admin only)
 export const getUserById = async (userId) => {
   try {
     const response = await api.get(`/users/${userId}`);
@@ -57,11 +52,10 @@ export const getUserById = async (userId) => {
       error.response?.data?.error ||
       error.message ||
       "Failed to fetch user";
-    throw errorMessage; // ✅ Throw string, not Error object
+    throw errorMessage;
   }
 };
 
-// Delete user
 export const deleteUser = async (userId) => {
   try {
     const response = await api.delete(`/users/${userId}`);
@@ -72,6 +66,6 @@ export const deleteUser = async (userId) => {
       error.response?.data?.error ||
       error.message ||
       "Failed to delete user";
-    throw errorMessage; // ✅ Throw string, not Error object
+    throw errorMessage;
   }
 };

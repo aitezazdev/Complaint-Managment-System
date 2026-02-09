@@ -180,7 +180,6 @@ const complaintSlice = createSlice({
       })
 
       .addCase(fetchUserComplaints.pending, (state) => {
-        // Only set loading if data hasn't been loaded yet
         if (!state.userComplaintsLoaded) {
           state.loading = true;
         }
@@ -188,10 +187,9 @@ const complaintSlice = createSlice({
       })
       .addCase(fetchUserComplaints.fulfilled, (state, action) => {
         state.loading = false;
-        // Only update if we actually fetched data (not skipped)
         if (!action.payload.skipFetch) {
           state.userComplaints = action.payload.data;
-          state.userComplaintsLoaded = true; // Mark as loaded
+          state.userComplaintsLoaded = true;
         }
       })
       .addCase(fetchUserComplaints.rejected, (state, action) => {

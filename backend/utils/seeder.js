@@ -4,7 +4,7 @@ import {connectDB} from "../config/db.js";
 
 dotenv.config();
 connectDB();
-
+// admin banany k liye ye file run karna hai
 const createAdmin = async () => {
   try {
     const adminExists = await User.findOne({ email: "test3@admin.com" });

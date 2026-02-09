@@ -75,7 +75,7 @@ const AdminLayout = () => {
 
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-30
-        w-72 bg-gradient-to-b from-gray-900 to-gray-800 
+        w-72 bg-linear-to-b from-gray-900 to-gray-800 
         flex flex-col shadow-xl
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
@@ -102,7 +102,7 @@ const AdminLayout = () => {
                   className="w-14 h-14 rounded-full object-cover ring-2 ring-amber-500"
                 />
               ) : (
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center ring-2 ring-amber-400">
+                <div className="w-14 h-14 rounded-full bg-linear-to-br from-amber-500 to-amber-600 flex items-center justify-center ring-2 ring-amber-400">
                   <span className="text-white font-semibold text-lg">
                     {getInitials(displayName)}
                   </span>

@@ -22,7 +22,6 @@ const initialState = {
   },
 };
 
-// Async thunks
 export const fetchCurrentUserProfile = createAsyncThunk(
   "user/fetchCurrentUserProfile",
   async (_, { rejectWithValue }) => {
@@ -110,7 +109,6 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch current user profile
       .addCase(fetchCurrentUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -126,7 +124,6 @@ const userSlice = createSlice({
         state.profileLoaded = true;
       })
 
-      // Update user
       .addCase(updateUserAsync.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -135,7 +132,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.currentUserProfile = action.payload;
         
-        // Update in users list if exists
         const index = state.users.findIndex(
           (user) => user._id === action.payload._id
         );
@@ -148,7 +144,6 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch all users
       .addCase(fetchAllUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -168,7 +163,6 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Fetch user by ID
       .addCase(fetchUserById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -182,7 +176,6 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Delete user
       .addCase(deleteUserAsync.pending, (state) => {
         state.loading = true;
         state.error = null;

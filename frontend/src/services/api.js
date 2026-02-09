@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// token store krnlye k lye for login and other protected routes
 const api = axios.create({
   baseURL: "http://localhost:5000/api", 
   timeout: 10000,

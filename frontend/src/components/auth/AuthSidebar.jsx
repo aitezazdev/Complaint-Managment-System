@@ -43,7 +43,7 @@ const AuthSidebar = () => {
         <div className="space-y-6">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-4 group">
-              <div className="flex-shrink-0 w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-slate-700 transition-colors">
+              <div className="shrink-0 w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-slate-700 transition-colors">
                 <feature.icon className="w-6 h-6 text-slate-300" />
               </div>
               <div>

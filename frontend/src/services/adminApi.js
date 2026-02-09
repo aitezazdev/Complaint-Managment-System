@@ -1,5 +1,6 @@
 import api from './api.js';
 
+// promote user to admin
 export const promoteToAdmin = async (id) => {
     try {
         const response = await api.put(`/admin/promote/${id}`);
@@ -14,6 +15,7 @@ export const promoteToAdmin = async (id) => {
     }
 };
 
+// demote admin to user
 export const demoteFromAdmin = async (id) => {
     try {
         const response = await api.put(`/admin/demote/${id}`);

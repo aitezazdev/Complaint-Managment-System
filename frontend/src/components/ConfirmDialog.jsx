@@ -46,12 +46,12 @@ const ConfirmDialog = ({
   const styles = getTypeStyles();
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-lg max-w-md w-full shadow-2xl animate-fadeIn">
-        {/* Header with Icon */}
+     
         <div className="p-6 pb-4">
           <div className="flex items-start gap-4">
-            <div className={`flex-shrink-0 w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center`}>
+            <div className={`shrink-0 w-12 h-12 rounded-full ${styles.iconBg} flex items-center justify-center`}>
               <AlertTriangle className={`w-6 h-6 ${styles.icon}`} />
             </div>
             <div className="flex-1">
@@ -65,14 +65,13 @@ const ConfirmDialog = ({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+              className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={20} />
             </button>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3 justify-end p-6 pt-2 border-t border-gray-100">
           <button
             onClick={onClose}

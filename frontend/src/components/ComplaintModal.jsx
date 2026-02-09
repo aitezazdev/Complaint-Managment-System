@@ -262,25 +262,21 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                   </span>
                 </div>
 
-                {/* Title */}
                 <div>
                   <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Title</h3>
                   <p className="text-base font-medium text-slate-900">{complaintData?.title}</p>
                 </div>
 
-                {/* Description */}
                 <div>
                   <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Description</h3>
                   <p className="text-sm text-slate-700 whitespace-pre-wrap">{complaintData?.description}</p>
                 </div>
 
-                {/* Address */}
                 <div>
                   <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Location</h3>
                   <p className="text-sm text-slate-700">{complaintData?.address}</p>
                 </div>
 
-                {/* Images */}
                 <div>
                   <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
                     Attachments {existingImages.length > 0 && `(${existingImages.length})`}
@@ -305,7 +301,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                   )}
                 </div>
 
-                {/* Admin Notes */}
                 <div>
                   <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">Admin Notes</h3>
                   {complaintData?.adminNotes && complaintData.adminNotes.trim() !== '' ? (
@@ -314,13 +309,12 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     </div>
                   ) : (
                     <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                      <AlertCircle className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                      <AlertCircle className="w-5 h-5 text-slate-400 shrink-0" />
                       <p className="text-sm text-slate-500">No notes from admin yet</p>
                     </div>
                   )}
                 </div>
 
-                {/* Dates */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
                   <div>
                     <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -345,10 +339,8 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                 </div>
               </div>
             ) : (
-              // Edit/Create Mode - Form
               <form onSubmit={handleSubmit}>
                 <div className="p-6 space-y-5">
-                  {/* Title */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Title <span className="text-rose-500">*</span>
@@ -364,7 +356,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     />
                   </div>
 
-                  {/* Category and Priority */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -405,7 +396,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     </div>
                   </div>
 
-                  {/* Address */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Location <span className="text-rose-500">*</span>
@@ -421,7 +411,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     />
                   </div>
 
-                  {/* Description */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Description <span className="text-rose-500">*</span>
@@ -437,7 +426,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     />
                   </div>
 
-                  {/* Existing Images (Edit Mode) */}
                   {isEditMode && existingImages.length > 0 && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -464,7 +452,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                     </div>
                   )}
 
-                  {/* Image Upload */}
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       {isEditMode ? 'Add Images (Max 5 total)' : 'Upload Images (Max 5)'}
@@ -493,7 +480,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                       </label>
                     </div>
 
-                    {/* New Image Previews */}
                     {imagePreviews.length > 0 && (
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-3">
                         {imagePreviews.map((preview, index) => (
@@ -517,7 +503,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
                   </div>
                 </div>
 
-                {/* Form Footer */}
                 <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200 bg-slate-50">
                   <button
                     type="button"
@@ -546,7 +531,6 @@ const ComplaintModal = ({ isOpen, onClose, mode = 'create', complaintData = null
             )}
           </div>
 
-          {/* View Mode Footer */}
           {isViewMode && (
             <div className="flex items-center justify-between p-6 border-t border-slate-200 bg-slate-50">
               <button
